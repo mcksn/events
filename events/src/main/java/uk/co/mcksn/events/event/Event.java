@@ -45,8 +45,8 @@ public interface Event<A extends Action, R extends Result, V extends Verificatio
 	 * Typically when an event occurs, the framework will wake up all the
 	 * threads that called wait( ) on the event. The highest priority thread
 	 * will run first. Initial use for this was so that the
-	 * {@link Story#when(uk.co.mcksn.events.event.multi.ComplexEvent) }
-	 * and {@link Story#when(uk.co.mcksn.events.event.multi.EventTree)}
+	 * {@link Story#when(uk.co.mcksn.events.bb.common.event.multi.ComplexEvent) }
+	 * and {@link Story#when(uk.co.mcksn.events.bb.common.event.multi.EventTree)}
 	 * plots could suspend the story until the event occurred.
 	 * </p>
 	 * TODO Oracle suggests 'spurious wakeups' may occur so a loop should be
@@ -66,8 +66,8 @@ public interface Event<A extends Action, R extends Result, V extends Verificatio
 	 * Typically when an event occurs, the framework will wake up all the
 	 * threads that called wait( ) on the event. The highest priority thread
 	 * will run first. Initial use for this was so that the
-	 * {@link Story#when(uk.co.mcksn.events.event.multi.ComplexEvent) }
-	 * and {@link Story#when(uk.co.mcksn.events.event.multi.EventTree)}
+	 * {@link Story#when(uk.co.mcksn.events.bb.common.event.multi.ComplexEvent) }
+	 * and {@link Story#when(uk.co.mcksn.events.bb.common.event.multi.EventTree)}
 	 * plots could suspend the story until the event occurred.
 	 * </p>
 	 * TODO Oracle suggests 'spurious wakeups' may occur so a loop should be
@@ -88,8 +88,8 @@ public interface Event<A extends Action, R extends Result, V extends Verificatio
 	 * </p>
 	 * Set number of milliseconds the framework should wait for the event to
 	 * occur before it stops waiting. This is used for the
-	 * {@link Story#when(uk.co.mcksn.events.event.multi.ComplexEvent) }
-	 * and {@link Story#when(uk.co.mcksn.events.event.multi.EventTree)}
+	 * {@link Story#when(uk.co.mcksn.events.bb.common.event.multi.ComplexEvent) }
+	 * and {@link Story#when(uk.co.mcksn.events.bb.common.event.multi.EventTree)}
 	 * plots.
 	 * </p>
 	 * TODO This is associated with wait plots. It is not available for
