@@ -57,7 +57,7 @@ public class Story {
 		if (eventTree instanceof EventLeaf) {
 			Event event = (Event) eventTree;
 			eventQueueWorker.add(event);
-			findSuitableLandscape(event).when(eventTree);
+			findSuitableLandscape(event).when(event);
 		} else {
 			internalWhen(eventTree.getComplexEvent());
 		}

@@ -1,12 +1,127 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>uk.co.mcksn</groupId>
 	<artifactId>events</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
 	<name>events</name>
 	<description>Events-based test framework</description>
 
+	<parent>
+		<groupId>uk.co.mcksn</groupId>
+		<artifactId>events-parent</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+	</parent>
+
+	<properties>
+		<blackbox.test.location.pattern>**/blackbox/*.java</blackbox.test.location.pattern>
+	</properties>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>${maven-surefire-plugin.version}</version>
+				<configuration>
+					<excludes>
+						<exclude>${blackbox.test.location.pattern}</exclude>
+					</excludes>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-failsafe-plugin</artifactId>
+				<version>${maven-failsafe-plugin.version}</version>
+				<executions>
+					<execution>
+						<id>integration-test</id>
+						<goals>
+							<goal>integration-test</goal>
+						</goals>
+						<configuration>
+							<excludes>
+								<exclude>none</exclude>
+							</excludes>
+							<includes>
+								<include>${blackbox.test.location.pattern}</include>
+							</includes>
+						</configuration>
+					</execution>
+					<execution>
+						<id>verify</id>
+						<goals>
+							<goal>verify</goal>
+						</goals>
+						<configuration>
+							<excludes>
+								<exclude>none</exclude>
+							</excludes>
+							<includes>
+								<include>${blackbox.test.location.pattern}</include>
+							</includes>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+
+				<groupId>org.apache.tomcat.maven</groupId>
+				<artifactId>tomcat7-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>pre-integration-test-start-tomcat</id>
+					</execution>
+					<execution>
+						<id>post-integration-test-shutdown-tomcat</id>
+					</execution>
+				</executions>
+			</plugin>
+
+		</plugins>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.tomcat.maven</groupId>
+					<artifactId>tomcat7-maven-plugin</artifactId>
+					<version>${tomcat7-maven-plugin.version}</version>
+					<executions>
+						<execution>
+							<id>pre-integration-test-start-tomcat</id>
+							<phase>pre-integration-test</phase>
+							<goals>
+								<goal>run-war-only</goal>
+							</goals>
+							<configuration>
+								<fork>true</fork>
+								<ignorePackaging>true</ignorePackaging>
+								<port>${project.name.stub-srr-when.port}</port>
+								<warFile>.</warFile>
+								<webapps>
+									<webapp>
+										<groupId>${project.groupId}</groupId>
+										<artifactId>${project.name.stub-srr-when}</artifactId>
+										<version>${project.version}</version>
+										<type>war</type>
+										<asWebapp>true</asWebapp>
+										<contextPath>/${project.name.stub-srr-when}</contextPath>
+									</webapp>
+								</webapps>
+							</configuration>
+						</execution>
+						<execution>
+							<id>post-integration-test-shutdown-tomcat</id>
+							<phase>post-integration-test</phase>
+							<goals>
+								<goal>shutdown</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+
+
+	</build>
 	<dependencies>
 		<dependency>
 			<groupId>com.github.tomakehurst</groupId>
@@ -37,6 +152,12 @@
 			<groupId>org.apache.maven.plugins</groupId>
 			<artifactId>maven-jar-plugin</artifactId>
 			<version>2.2</version>
+		</dependency>
+		<dependency>
+			<groupId>uk.co.mcksn</groupId>
+			<artifactId>behavior</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 

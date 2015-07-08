@@ -12,7 +12,7 @@ import uk.co.mcksn.events.server.WireMockServerDef;
 public class ServerReceivesRequestAction implements Action {
 
 	private StubMapping stubMapping = null;
-	public void givenRequestFor(MappingBuilder mappingBuilder)
+	public void givenRequest(MappingBuilder mappingBuilder)
 	{
 		stubMapping = mappingBuilder.build();
 	}

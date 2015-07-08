@@ -15,6 +15,8 @@ public abstract class AbstractStoryLandscape<E extends Event> {
 
 	private Story story = null;
 	
+	protected abstract void when(Event event);
+	
 	protected abstract void when(EventTree event);
 
 	protected abstract void verify(Event event);
