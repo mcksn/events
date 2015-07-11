@@ -6,67 +6,45 @@ import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
-import static uk.co.mcksn.events.event.multi.EventTreeBuilder.and;
-import static uk.co.mcksn.events.event.multi.EventTreeBuilder.or;
-
-import java.io.IOException;
-
-import static org.junit.Assert.*;
-import static uk.co.mcksn.events.behavior.common.enumeration.AbstractWhenPlotBehaviorEnumeration.*;
+import static uk.co.mcksn.events.behavior.common.enumeration.AbstractWhenPlotBehaviorEnumeration.SHOULD_wait_for_event_to_occur_WHEN_when_event_GIVEN_event_can_be_waited_for;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.github.tomakehurst.wiremock.WireMockServer;
 
 import uk.co.mcksn.events.behavior.common.enumeration.AbstractWhenPlotBehaviorEnumeration;
 import uk.co.mcksn.events.behavior.common.junit.AbstractWhenPlotBehavior;
 import uk.co.mcksn.events.blackbox.util.apache.httpclient.ApacheHttpClientUtil;
+import uk.co.mcksn.events.blackbox.util.common.UtilityProvider;
+import uk.co.mcksn.events.blackbox.util.wiremock.notifier.WireMockNotifierImpl;
 import uk.co.mcksn.events.event.ServerReceivesRequestEvent;
-import uk.co.mcksn.events.event.multi.ComplexEvent;
 import uk.co.mcksn.events.landscape.ServerReceivesRequestLandscape;
 import uk.co.mcksn.events.server.WireMockServerDef;
 import uk.co.mcksn.events.story.AbstractStoryLandscape;
 import uk.co.mcksn.events.story.Story;
 
-import com.github.tomakehurst.wiremock.WireMockServer;
-import com.github.tomakehurst.wiremock.common.Notifier;
-
 public class SRRWhenPlotBBTest extends AbstractWhenPlotBehavior {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(SRRWhenPlotBBTest.class);
 
 	private static final String COMPONENT_B_URL = "/compB";
 	private static final String COMPONENT_C_URL = "/compC";
 
 	private static String STUB_URL = "http://localhost:8080/stub-srr-when/invokeTest";
 
-	private static final ApacheHttpClientUtil APACHE_HTTP_CLIENT = new ApacheHttpClientUtil(STUB_URL);
+	private static final UtilityProvider UTILITY_PROVIDER = new UtilityProvider();
 
 	private AbstractStoryLandscape<?> storyLandscape = null;
 
-	private WireMockServerDef wireMockServerDefB = WireMockServerDef
-			.buildDefintion(new WireMockServer(wireMockConfig().notifier(new Notifier() {
-
-				@Override
-				public void info(String message) {
-					System.out.println("info " + message);
-
-				}
-
-				@Override
-				public void error(String message, Throwable t) {
-					System.out.println("error " + message + t);
-
-				}
-
-				@Override
-				public void error(String message) {
-					System.out.println("error " + message);
-
-				}
-			}).port(8051)), "Comp B");
+	private WireMockServerDef wireMockServerDefB = WireMockServerDef.buildDefintion(
+			new WireMockServer(wireMockConfig().notifier(new WireMockNotifierImpl()).port(8051)), "Comp B");
 
 	private WireMockServerDef wireMockServerDefC = WireMockServerDef
-			.buildDefintion(new WireMockServer(wireMockConfig().port(8052)), "Comp C");
+			.buildDefintion(new WireMockServer(wireMockConfig().notifier(new WireMockNotifierImpl()).port(8052)), "Comp C");
 
 	private ServerReceivesRequestEvent defineBaseEventRequests(String requestBody, WireMockServerDef respondingServer,
 			final String url, AbstractWhenPlotBehaviorEnumeration behaviorEnum) {
@@ -92,7 +70,7 @@ public class SRRWhenPlotBBTest extends AbstractWhenPlotBehavior {
 		return event;
 
 	}
-	
+
 	@Before
 	public void before() {
 		storyLandscape = ServerReceivesRequestLandscape.looksLike(wireMockServerDefB, wireMockServerDefC);
@@ -100,11 +78,9 @@ public class SRRWhenPlotBBTest extends AbstractWhenPlotBehavior {
 
 	@After
 	public void after() {
-		try {
-			APACHE_HTTP_CLIENT.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		
+		UTILITY_PROVIDER.cleanUp();
+
 		if (wireMockServerDefB.getWireMockServer().isRunning()) {
 			wireMockServerDefB.getWireMockServer().stop();
 		}
@@ -120,8 +96,8 @@ public class SRRWhenPlotBBTest extends AbstractWhenPlotBehavior {
 		final AbstractWhenPlotBehaviorEnumeration behaviorEnum = SHOULD_wait_for_event_to_occur_WHEN_when_event_GIVEN_event_can_be_waited_for;
 		ServerReceivesRequestEvent reqToCompBWithResponse1 = defineRequestsToCompB("Response 1", behaviorEnum);
 
-		//invoke test
-		APACHE_HTTP_CLIENT.sendGet(behaviorEnum.name());
+		// invoke test
+		UTILITY_PROVIDER.getNewHttpClientInstance(STUB_URL).sendGet(behaviorEnum.name());
 
 		// @formatter:off
 		Story story = Story.given(storyLandscape);
@@ -131,7 +107,7 @@ public class SRRWhenPlotBBTest extends AbstractWhenPlotBehavior {
 		story.verify(reqToCompBWithResponse1)
 			 .and_the_story_continues();
 
-		story.logStorySoFar();
+		//story.logStorySoFar();
 		// @formatter:on
 
 	}

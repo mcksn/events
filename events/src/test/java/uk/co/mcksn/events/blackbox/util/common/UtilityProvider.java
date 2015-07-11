@@ -7,27 +7,34 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import uk.co.mcksn.events.blackbox.util.apache.httpclient.ApacheHttpClientUtil;
+import uk.co.mcksn.events.blackbox.util.wiremock.notifier.WireMockNotifierImpl;
 
 public class UtilityProvider implements CleanUpable {
 
 	public ExecutorService executorService = ExecutorServiceSingleton.getInstance();
 	public Collection<ApacheHttpClientUtil> apacheHttpClientUtils = new ArrayList<ApacheHttpClientUtil>();
+	private long TIMEOUT_WAITING_FOR_HTTP_CLIENTREQUEST_TO_COMPLETE = 800L;
 
-	public ApacheHttpClientUtil getHttpClient(String url) {
-		ApacheHttpClientUtil apacheHttpClientUtil = new ApacheHttpClientUtil(url, executorService);
+	public ApacheHttpClientUtil getNewHttpClientInstance(String url) {
+		ApacheHttpClientUtil apacheHttpClientUtil = new ApacheHttpClientUtil(url, executorService,
+				TIMEOUT_WAITING_FOR_HTTP_CLIENTREQUEST_TO_COMPLETE);
 		apacheHttpClientUtils.add(apacheHttpClientUtil);
 
 		return apacheHttpClientUtil;
 
 	}
 
+	public WireMockNotifierImpl getNewWireMockNotifierInstance(String url) {
+		return new WireMockNotifierImpl();
+
+	}
+
 	public void cleanUp() {
 		ExecutorServiceSingleton.cleanUp();
-		for (ApacheHttpClientUtil util : apacheHttpClientUtils)
-		{
-			//util.c
+		for (ApacheHttpClientUtil util : apacheHttpClientUtils) {
+			util.cleanUp();
 		}
-			
+
 	}
 
 	static class ExecutorServiceSingleton {
