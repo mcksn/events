@@ -15,4 +15,11 @@ public class ExecutorServiceUtil {
 
 		return executorService;
 	}
+
+	public static void close() {
+		if (executorService != null) {
+			executorService.shutdown();
+		}
+	}
+
 }

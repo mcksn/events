@@ -1,9 +1,8 @@
 package uk.co.mcksn.events.blackbox.util.apache.httpclient;
 
-import java.io.Closeable;
-import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.logging.Logger;
@@ -13,29 +12,44 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 
-import uk.co.mcksn.events.blackbox.util.common.ExecutorServiceUtil;
+import uk.co.mcksn.events.blackbox.util.common.CleanUpable;
 
-public class ApacheHttpClientUtil implements Closeable {
+public class ApacheHttpClientUtil implements CleanUpable {
 
 	private static final Logger LOGGER = Logger.getLogger(ApacheHttpClientUtil.class.getCanonicalName());
 
 	private String url = null;
-	private ExecutorService executorService = ExecutorServiceUtil.getExecutorService();
+	private HttpClient client = new DefaultHttpClient();
+	public List<Future<?>> futureResponses = new ArrayList<Future<?>>();
 
-	public ApacheHttpClientUtil(String url) {
+	private ExecutorService executorService = null;
+
+	public ApacheHttpClientUtil(String url, ExecutorService executorService) {
 		super();
 		this.url = url;
+		this.executorService = executorService;
 	}
 
 	@Override
-	public void close() throws IOException {
-		executorService.shutdownNow();
+	public void cleanUp() {
+		for (Future<?> futureResponse : futureResponses) {
+
+		}
+		// cycle through and
+
+		/*
+		 * } catch (HttpException e) { System.err.println(
+		 * "Fatal protocol violation: " + e.getMessage()); e.printStackTrace();
+		 * } catch (IOException e) { System.err.println(
+		 * "Fatal transport error: " + e.getMessage()); e.printStackTrace(); }
+		 * finally { // Release the connection. method.releaseConnection(); }
+		 */
+
 	}
 
-	public void sendGet(final String behaviorName) {
+	public Future<Object> sendGet(final String behaviorName) {
 
-		final HttpClient client = new DefaultHttpClient();
-
+		Future<Object> futureResponse = null;
 		executorService.submit(new Callable<Object>() {
 			public Object call() throws Exception {
 
@@ -52,14 +66,16 @@ public class ApacheHttpClientUtil implements Closeable {
 				return response;
 			}
 		});
+		futureResponses.add(futureResponse);
+		return futureResponse;
+	}
 
-		/*
-		 * try { future.get(); } catch (InterruptedException |
-		 * ExecutionException ex) { LOGGER.severe(
-		 * "Exception occurred whilst sending 'GET' request"); throw new
-		 * RuntimeException(ex); }
-		 */
+	public List<Future<?>> getFutureResponses() {
+		return futureResponses;
+	}
 
+	public void setFutureResponses(List<Future<?>> futureResponses) {
+		this.futureResponses = futureResponses;
 	}
 
 }

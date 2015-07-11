@@ -36,7 +36,6 @@ public class SRRWhenPlotBBTest extends AbstractWhenPlotBehavior {
 
 	private static final String COMPONENT_B_URL = "/compB";
 	private static final String COMPONENT_C_URL = "/compC";
-	private static String LISTENER_RESPONSE_BDY = "Listener";
 
 	private static String STUB_URL = "http://localhost:8080/stub-srr-when/invokeTest";
 
@@ -93,19 +92,7 @@ public class SRRWhenPlotBBTest extends AbstractWhenPlotBehavior {
 		return event;
 
 	}
-
-	private ServerReceivesRequestEvent defineRequestsToCompC(String requestBody,
-			AbstractWhenPlotBehaviorEnumeration behaviorEnum) {
-
-		ServerReceivesRequestEvent event = defineBaseEventRequests(requestBody, wireMockServerDefC, COMPONENT_C_URL,
-				behaviorEnum);
-		event.setName("Component A makes a request to Component C");
-		event.setWireMockServerDef(wireMockServerDefC);
-
-		return event;
-
-	}
-
+	
 	@Before
 	public void before() {
 		storyLandscape = ServerReceivesRequestLandscape.looksLike(wireMockServerDefB, wireMockServerDefC);
