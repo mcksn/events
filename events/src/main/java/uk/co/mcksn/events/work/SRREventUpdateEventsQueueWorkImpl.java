@@ -3,9 +3,11 @@ package uk.co.mcksn.events.work;
 import java.util.Collection;
 
 import com.github.tomakehurst.wiremock.http.Request;
+import com.github.tomakehurst.wiremock.verification.LoggedRequest;
 
 import uk.co.mcksn.events.event.Event;
 import uk.co.mcksn.events.event.EventState;
+import uk.co.mcksn.events.event.ServerReceivesRequestEvent;
 import uk.co.mcksn.events.event.ThreadSafeEventQueueWorker;
 import uk.co.mcksn.events.event.multi.traverser.EventTreeTraverser;
 import uk.co.mcksn.events.event.multi.traverser.RecursiveEventTraverserImpl;
@@ -34,6 +36,10 @@ public class SRREventUpdateEventsQueueWorkImpl extends AbstractUpdateEventsQueue
 			event.setState(EventState.OCCURRED);
 		}
 		return event;
+	}
+
+	protected void updateResponse(ServerReceivesRequestEvent matchedEvent) {
+		matchedEvent.getResult().setLoggedRequest(LoggedRequest.createFrom(request));
 	}
 
 }

@@ -1,8 +1,12 @@
 package uk.co.mcksn.events.story;
 
 import uk.co.mcksn.events.event.Event;
-import uk.co.mcksn.events.event.multi.EventTree;
-import uk.co.mcksn.events.exception.VerificationFailedException;
+import uk.co.mcksn.events.event.multi.EventTreeable;
+import uk.co.mcksn.events.exception.VerificationNtSuccessfulException;
+import uk.co.mcksn.events.plot.ExpectPlotable;
+import uk.co.mcksn.events.plot.SimulatePlotable;
+import uk.co.mcksn.events.plot.VerifyPlotable;
+import uk.co.mcksn.events.plot.WhenPlotable;
 
 public class ThenStory extends StoryDecorator {
 
@@ -10,22 +14,22 @@ public class ThenStory extends StoryDecorator {
 		super(story);
 	}
 
-	public ThenStory thenSimulate(Event event) {
+	public ThenStory thenSimulate(SimulatePlotable event) {
 		getStory().simulate(event);
 		return this;
 	}
 	
-	public ThenStory then_expect(Event event) {
-		getStory().simulate(event);
+	public ThenStory then_expect(ExpectPlotable event) {
+		getStory().expect(event);
 		return this;
 	}
 
-	public ThenStory then_verify(Event event) throws VerificationFailedException {
+	public ThenStory then_verify(VerifyPlotable event) throws VerificationNtSuccessfulException {
 		getStory().verify(event);
 		return this;
 	}
 	
-	public OccursThenStory and_when(EventTree event) throws VerificationFailedException {
+	public OccursThenStory and_when(WhenPlotable event) throws VerificationNtSuccessfulException {
 		getStory().when(event);
 		return getOccursThenStory();
 	}

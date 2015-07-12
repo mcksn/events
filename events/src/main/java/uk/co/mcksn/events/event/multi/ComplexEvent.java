@@ -7,20 +7,58 @@ import uk.co.mcksn.events.event.Event;
 import uk.co.mcksn.events.event.EventState;
 import uk.co.mcksn.events.event.action.NoAction;
 import uk.co.mcksn.events.event.result.NoResult;
+import uk.co.mcksn.events.event.strategy.VerificationStrategyFactory;
 import uk.co.mcksn.events.event.verificationpolicy.ComplextVerificationPolicy;
+import uk.co.mcksn.events.plot.WaitPlotable;
+import uk.co.mcksn.events.plot.verify.VerificationOutcome;
 
-public class ComplexEvent implements Event<NoAction, NoResult, ComplextVerificationPolicy>, EventTree {
+public class ComplexEvent implements Event<NoAction, NoResult, ComplextVerificationPolicy>, WaitPlotable {
 
 	private ComplextVerificationPolicy verificationPolicy;
 
-	private EventTree eventTree;
+	private EventTreeable eventTree;
 	private String name = "Not defined";
 	private Long timeout = 20000L;
 
 	private EventState state = EventState.IN_PROGRESS;
+	private VerificationOutcome verificationOutcome = VerificationOutcome.UNKOWN;
 
-	public ComplexEvent(EventTree eventTree) {
+	public ComplexEvent(EventTreeable eventTree) {
 		this.eventTree = eventTree;
+	}
+
+
+	public void setParentsOfAllChildren(EventTreeable rootParent) {
+		setParent(rootParent);
+		this.eventTree.setParentsOfAllChildren(rootParent);
+	}
+	
+
+
+	public EventState getUpdatedState() {
+		if (state.equals(EventState.OCCURRED)) {
+			return state;
+		}
+		state = eventTree.getUpdatedState();
+
+		return state;
+	}
+
+	public VerificationOutcome getUpdatedVerificationOutcome(VerificationStrategyFactory verificationStrategyFactory) {
+		if (!verificationOutcome.equals(VerificationOutcome.UNKOWN)) {
+			return verificationOutcome;
+		}
+
+		verificationOutcome = eventTree.getUpdatedVerificationOutcome(verificationStrategyFactory);
+		return verificationOutcome;
+	}
+	
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public NoAction getAction() {
@@ -37,7 +75,6 @@ public class ComplexEvent implements Event<NoAction, NoResult, ComplextVerificat
 
 	public void setResult(NoResult result) {
 		// do nothing
-
 	}
 
 	public ComplextVerificationPolicy getVerificationPolicy() {
@@ -49,21 +86,26 @@ public class ComplexEvent implements Event<NoAction, NoResult, ComplextVerificat
 
 	}
 
-	public EventState getState() {
-		return state;
+	public void setTimeout(Long timeout) {
+		this.timeout = timeout;
 	}
 
-	public void setState(EventState state) {
-		this.state = state;
+	public Long getTimeout() {
+		return timeout;
 	}
 
-	public String getName() {
-		return name;
+	public ComplexEvent getComplexEvent() {
+		return this;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public EventTreeable getParent() {
+		return eventTree.getParent();
 	}
+
+	public void setParent(EventTreeable parent) {
+		this.eventTree.setParent(parent);
+	}
+
 
 	public void doWait() {
 		synchronized (this) {
@@ -84,12 +126,22 @@ public class ComplexEvent implements Event<NoAction, NoResult, ComplextVerificat
 
 	}
 
-	public void setTimeout(Long timeout) {
-		this.timeout = timeout;
+	public EventState getState() {
+		return state;
 	}
 
-	public Long getTimeout() {
-		return timeout;
+	public void setState(EventState state) {
+		this.state = state;
+	}
+
+	@Override
+	public VerificationOutcome getVerificationOutcome() {
+		return verificationOutcome;
+	}
+
+	@Override
+	public void setVerificationOutcome(VerificationOutcome verificationOutcome) {
+		this.verificationOutcome = verificationOutcome;
 	}
 
 	@Override
@@ -97,32 +149,6 @@ public class ComplexEvent implements Event<NoAction, NoResult, ComplextVerificat
 		return "\n\n############# COMPLEX EVENT Name:" + name + " #####################\n\n"
 				+ ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE)
 				+ "\n\n############################################";
-	}
-
-	public ComplexEvent getComplexEvent() {
-		return this;
-	}
-
-	public EventTree getParent() {
-		return eventTree.getParent();
-	}
-
-	public void setParent(EventTree parent) {
-		this.eventTree.setParent(parent);
-	}
-
-	public void setParentsOfAllChildren(EventTree rootParent) {
-		setParent(rootParent);
-		this.eventTree.setParentsOfAllChildren(rootParent);
-	}
-
-	public EventState getUpdatedState() {
-		if (state.equals(EventState.OCCURRED)) {
-			return state;
-		}
-		state = eventTree.getUpdatedState();
-
-		return state;
 	}
 
 }

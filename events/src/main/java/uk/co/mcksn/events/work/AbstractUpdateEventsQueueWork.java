@@ -6,9 +6,11 @@ import uk.co.mcksn.events.event.Event;
 import uk.co.mcksn.events.event.EventState;
 import uk.co.mcksn.events.event.ThreadSafeEventQueueWorker;
 import uk.co.mcksn.events.event.multi.ComplexEvent;
-import uk.co.mcksn.events.event.multi.EventTree;
+import uk.co.mcksn.events.event.multi.EventTreeable;
 import uk.co.mcksn.events.event.multi.traverser.EventTreeTraverser;
 import uk.co.mcksn.events.event.multi.traverser.RecursiveEventTraverserImpl;
+import uk.co.mcksn.events.plot.WaitPlotable;
+import uk.co.mcksn.events.plot.WhenPlotable;
 
 public abstract class AbstractUpdateEventsQueueWork implements UpdateEventsQueueWork {
 
@@ -23,21 +25,26 @@ public abstract class AbstractUpdateEventsQueueWork implements UpdateEventsQueue
 	public void doWork(Collection<Event> events) {
 
 		Event matchEvent = matchWorkToEvent(events);
+		if (matchEvent == null) {
+			System.out.println("WARN: Real world event could not be matched to registered event");
+			// TODO Use logger instead
+		}
 
-		doNotifyOnEvent(matchEvent);
-
-		if (matchEvent instanceof EventTree) {
-			ComplexEvent complexEvent = eventTreeTraverser.getComplexEventOfRootTree((EventTree) matchEvent);
+		if (matchEvent instanceof EventTreeable) {
+			ComplexEvent complexEvent = eventTreeTraverser.getComplexEventOfRootTree((EventTreeable) matchEvent);
 			EventState complextEventState = complexEvent.getUpdatedState();
 			if (complextEventState.equals(EventState.OCCURRED)) {
-
 				doNotifyOnEvent(complexEvent);
 			}
 		}
 
+		if (matchEvent instanceof WaitPlotable) {
+			doNotifyOnEvent((WaitPlotable) matchEvent);
+		}
+
 	}
 
-	private void doNotifyOnEvent(Event event) {
+	private void doNotifyOnEvent(WaitPlotable event) {
 		if (event != null) {
 			event.doNotify();
 		}

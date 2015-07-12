@@ -1,7 +1,7 @@
 package uk.co.mcksn.events.story;
 
 import uk.co.mcksn.events.event.Event;
-import uk.co.mcksn.events.exception.VerificationFailedException;
+import uk.co.mcksn.events.exception.VerificationNtSuccessfulException;
 
 class StoryDecorator {
 

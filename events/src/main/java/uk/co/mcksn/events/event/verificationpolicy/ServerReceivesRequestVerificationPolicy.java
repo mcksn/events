@@ -14,7 +14,7 @@ public class ServerReceivesRequestVerificationPolicy implements VerificationPoli
 	public void verify(RequestPatternBuilder requestPatternBuilder) {
 		requestPattern = requestPatternBuilder.build();
 	}
-
+	
 	public RequestPattern getRequestPattern() {
 		return requestPattern;
 	}

@@ -4,27 +4,19 @@ import java.util.Arrays;
 
 import uk.co.mcksn.events.event.Event;
 import uk.co.mcksn.events.event.EventState;
+import uk.co.mcksn.events.event.strategy.VerificationStrategyFactory;
+import uk.co.mcksn.events.plot.verify.VerificationOutcome;
 
 public class OrEventTree extends OperatorEventTree {
 
-	public OrEventTree(EventTree[] leaves) {
+	public OrEventTree(EventTreeable[] leaves) {
 		super();
 		this.leaves.addAll(Arrays.asList(leaves));
 	}
 
-	public EventState getUpdatedState() {
-		ComplexEvent complexEvent = getComplexEvent();
-		if (complexEvent.getState().equals(EventState.OCCURRED)) {
-			return EventState.OCCURRED;
-		} else {
-			complexEvent.setState(calculateState());
-		}
-		return complexEvent.getState();
-	}
-
-	private EventState calculateState() {
+	protected EventState calculateState() {
 		EventState stateSoFar = EventState.IN_PROGRESS;
-		for (EventTree eventTree : leaves) {
+		for (EventTreeable eventTree : leaves) {
 
 			if (eventTree instanceof Event) {
 				if (((Event) eventTree).getState().equals(EventState.OCCURRED)) {
@@ -39,5 +31,6 @@ public class OrEventTree extends OperatorEventTree {
 		}
 		return stateSoFar;
 	}
+
 
 }
