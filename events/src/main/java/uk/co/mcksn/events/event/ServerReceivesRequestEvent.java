@@ -4,10 +4,16 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
 import uk.co.mcksn.events.event.action.ServerReceivesRequestAction;
-import uk.co.mcksn.events.event.multi.ComplexEvent;
-import uk.co.mcksn.events.event.multi.EventTreeable;
+import uk.co.mcksn.events.event.complex.ComplexEvent;
+import uk.co.mcksn.events.event.module.occured.AbstractEventOccuredModule;
+import uk.co.mcksn.events.event.module.occured.EventOccurredModule;
+import uk.co.mcksn.events.event.module.tree.TreeEventModule;
+import uk.co.mcksn.events.event.module.wait.AbstractWaitModule;
+import uk.co.mcksn.events.event.module.wait.WaitEventModule;
 import uk.co.mcksn.events.event.result.ServerRecievesRequestResult;
+import uk.co.mcksn.events.event.strategy.RegisterForWaitStrategyFactory;
 import uk.co.mcksn.events.event.strategy.VerificationStrategyFactory;
+import uk.co.mcksn.events.event.tree.EventTreeable;
 import uk.co.mcksn.events.event.verificationpolicy.ServerReceivesRequestVerificationPolicy;
 import uk.co.mcksn.events.plot.ExpectPlotable;
 import uk.co.mcksn.events.plot.VerifyPlotable;
@@ -17,15 +23,18 @@ import uk.co.mcksn.events.server.WireMockServerDef;
 
 public class ServerReceivesRequestEvent implements
 		Event<ServerReceivesRequestAction, ServerRecievesRequestResult, ServerReceivesRequestVerificationPolicy>,
-		EventTreeable, ExpectPlotable, WhenPlotable {
+		ExpectPlotable, WhenPlotable {
 
 	private ServerReceivesRequestAction action = new ServerReceivesRequestAction();
 	private ServerRecievesRequestResult result = new ServerRecievesRequestResult();
 	private ServerReceivesRequestVerificationPolicy verificationPolicy = new ServerReceivesRequestVerificationPolicy();
+	private WaitEventModule waitEventModule = new WaitEventModule(this);
+	private EventOccurredModule eventOccurredModule = new EventOccurredModule(this);
+	protected TreeEventModule treeEventModule = new TreeEventModule(this);
 
 	private WireMockServerDef wireMockServerDef;
 	private String name = "Not defined";
-	private Long timeout = 20000L;
+
 	private EventTreeable parent = null;
 
 	private EventState state = EventState.IN_PROGRESS;
@@ -93,10 +102,6 @@ public class ServerReceivesRequestEvent implements
 		this.wireMockServerDef = wireMockServerDef;
 	}
 
-	public ComplexEvent getComplexEvent() {
-		return new ComplexEvent(this);
-	}
-
 	public EventTreeable getParent() {
 		return parent;
 	}
@@ -121,33 +126,18 @@ public class ServerReceivesRequestEvent implements
 		this.verificationOutcome = verificationOutcome;
 	}
 
-	public void doWait() {
-		synchronized (this) {
-			try {
-				this.wait(timeout);
-			} catch (InterruptedException e) {
-				System.err.println(e);
-				// TODO Log. Research how useful notifier pattern is. Would make
-				// it difficult to debug
-			}
-		}
-
+	@Override
+	public AbstractWaitModule getWaitModule() {
+		return waitEventModule;
 	}
 
-	public void doNotify() {
-		synchronized (this) {
-			this.notify();
-
-		}
-
+	public AbstractEventOccuredModule getEventOccurredModule() {
+		return eventOccurredModule;
 	}
 
-	public void setTimeout(Long timeout) {
-		this.timeout = timeout;
-	}
-
-	public Long getTimeout() {
-		return timeout;
+	@Override
+	public TreeEventModule getTreeModule() {
+		return treeEventModule;
 	}
 
 	@Override
@@ -155,11 +145,6 @@ public class ServerReceivesRequestEvent implements
 		return "\n\n############# EVENT Name:" + name + " #####################\n\n"
 				+ ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE)
 				+ "\n\n############################################";
-	}
-
-	@Override
-	public VerificationOutcome getUpdatedVerificationOutcome(VerificationStrategyFactory verificationStrategyFactory) {
-		return getVerificationOutcome();
 	}
 
 }

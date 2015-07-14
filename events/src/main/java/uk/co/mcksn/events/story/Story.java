@@ -9,9 +9,9 @@ import org.slf4j.LoggerFactory;
 
 import uk.co.mcksn.events.event.Event;
 import uk.co.mcksn.events.event.ThreadSafeEventQueueWorker;
-import uk.co.mcksn.events.event.multi.ComplexEvent;
-import uk.co.mcksn.events.event.multi.EventTreeable;
+import uk.co.mcksn.events.event.complex.ComplexEvent;
 import uk.co.mcksn.events.event.strategy.VerificationStrategyFactory;
+import uk.co.mcksn.events.event.tree.EventTreeable;
 import uk.co.mcksn.events.exception.VerificationNtSuccessfulException;
 import uk.co.mcksn.events.landscape.LandscapeResolver;
 import uk.co.mcksn.events.plot.ExpectPlotable;
@@ -101,7 +101,11 @@ public class Story {
 
 	private void internalWhen(ComplexEvent complexEvent) {
 		logPlot(Plot.WHEN, complexEvent);
+		
+		complexEvent.
 		complexEvent.setParentsOfAllChildren(null);
+		
+		((WhenPlotable) event).doWait();
 
 	}
 

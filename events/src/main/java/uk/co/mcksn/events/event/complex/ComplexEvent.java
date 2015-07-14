@@ -1,4 +1,7 @@
-package uk.co.mcksn.events.event.multi;
+package uk.co.mcksn.events.event.complex;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
@@ -6,6 +9,12 @@ import org.apache.commons.lang.builder.ToStringStyle;
 import uk.co.mcksn.events.event.Event;
 import uk.co.mcksn.events.event.EventState;
 import uk.co.mcksn.events.event.action.NoAction;
+import uk.co.mcksn.events.event.module.occured.AbstractEventOccuredModule;
+import uk.co.mcksn.events.event.module.tree.AbstractTreeModule;
+import uk.co.mcksn.events.event.module.tree.TreeComplextEventModule;
+import uk.co.mcksn.events.event.module.tree.TreeEventModule;
+import uk.co.mcksn.events.event.module.wait.AbstractWaitModule;
+import uk.co.mcksn.events.event.module.wait.WaitComplexEventModule;
 import uk.co.mcksn.events.event.result.NoResult;
 import uk.co.mcksn.events.event.strategy.VerificationStrategyFactory;
 import uk.co.mcksn.events.event.verificationpolicy.ComplextVerificationPolicy;
@@ -15,44 +24,20 @@ import uk.co.mcksn.events.plot.verify.VerificationOutcome;
 public class ComplexEvent implements Event<NoAction, NoResult, ComplextVerificationPolicy>, WaitPlotable {
 
 	private ComplextVerificationPolicy verificationPolicy;
-
-	private EventTreeable eventTree;
 	private String name = "Not defined";
-	private Long timeout = 20000L;
+	protected AbstractWaitModule<ComplexEvent> waitModule = new WaitComplexEventModule(this);
+	protected AbstractEventOccuredModule<ComplexEvent> eventOccuredModule = null;
+	protected AbstractTreeModule<ComplexEvent> treeEventModule = new TreeComplextEventModule(this);
+	
+	protected Collection<Event> leaves = new ArrayList<Event>();
 
 	private EventState state = EventState.IN_PROGRESS;
 	private VerificationOutcome verificationOutcome = VerificationOutcome.UNKOWN;
 
-	public ComplexEvent(EventTreeable eventTree) {
-		this.eventTree = eventTree;
+	protected ComplexEvent() {
+		super();
 	}
 
-
-	public void setParentsOfAllChildren(EventTreeable rootParent) {
-		setParent(rootParent);
-		this.eventTree.setParentsOfAllChildren(rootParent);
-	}
-	
-
-
-	public EventState getUpdatedState() {
-		if (state.equals(EventState.OCCURRED)) {
-			return state;
-		}
-		state = eventTree.getUpdatedState();
-
-		return state;
-	}
-
-	public VerificationOutcome getUpdatedVerificationOutcome(VerificationStrategyFactory verificationStrategyFactory) {
-		if (!verificationOutcome.equals(VerificationOutcome.UNKOWN)) {
-			return verificationOutcome;
-		}
-
-		verificationOutcome = eventTree.getUpdatedVerificationOutcome(verificationStrategyFactory);
-		return verificationOutcome;
-	}
-	
 	public String getName() {
 		return name;
 	}
@@ -86,46 +71,6 @@ public class ComplexEvent implements Event<NoAction, NoResult, ComplextVerificat
 
 	}
 
-	public void setTimeout(Long timeout) {
-		this.timeout = timeout;
-	}
-
-	public Long getTimeout() {
-		return timeout;
-	}
-
-	public ComplexEvent getComplexEvent() {
-		return this;
-	}
-
-	public EventTreeable getParent() {
-		return eventTree.getParent();
-	}
-
-	public void setParent(EventTreeable parent) {
-		this.eventTree.setParent(parent);
-	}
-
-
-	public void doWait() {
-		synchronized (this) {
-			try {
-				this.wait(timeout);
-			} catch (InterruptedException e) {
-				System.err.println(e);
-			}
-		}
-
-	}
-
-	public void doNotify() {
-		synchronized (this) {
-			this.notify();
-
-		}
-
-	}
-
 	public EventState getState() {
 		return state;
 	}
@@ -145,10 +90,34 @@ public class ComplexEvent implements Event<NoAction, NoResult, ComplextVerificat
 	}
 
 	@Override
+	public AbstractWaitModule getWaitModule() {
+		return waitModule;
+	}
+
+	@Override
+	public AbstractEventOccuredModule getEventOccurredModule() {
+		return eventOccuredModule;
+	}
+
+	public Collection<Event> getLeaves() {
+		return leaves;
+	}
+
+	public void setLeaves(Collection<Event> leaves) {
+		this.leaves = leaves;
+	}
+	@Override
+	public AbstractTreeModule getTreeModule() {
+		return treeEventModule;
+	}
+
+	@Override
 	public String toString() {
 		return "\n\n############# COMPLEX EVENT Name:" + name + " #####################\n\n"
 				+ ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE)
 				+ "\n\n############################################";
 	}
+
+
 
 }

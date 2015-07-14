@@ -4,8 +4,9 @@ import java.lang.reflect.ParameterizedType;
 
 import uk.co.mcksn.events.event.Event;
 import uk.co.mcksn.events.event.ThreadSafeEventQueueWorker;
-import uk.co.mcksn.events.event.multi.EventTreeable;
+import uk.co.mcksn.events.event.strategy.RegisterForWaitStrategy;
 import uk.co.mcksn.events.event.strategy.VerificationStrategy;
+import uk.co.mcksn.events.event.tree.EventTreeable;
 
 public abstract class AbstractStoryLandscape<E extends Event> {
 
@@ -26,6 +27,8 @@ public abstract class AbstractStoryLandscape<E extends Event> {
 	protected abstract void expect(Event event);
 	
 	public abstract VerificationStrategy getVerificationStrategy();
+	
+	public abstract RegisterForWaitStrategy getRegisterForWaitStrategy();
 
 	protected void setStory(Story story) {
 		this.story = story;

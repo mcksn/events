@@ -1,7 +1,7 @@
 package uk.co.mcksn.events.story;
 
 import uk.co.mcksn.events.event.Event;
-import uk.co.mcksn.events.event.multi.EventTreeable;
+import uk.co.mcksn.events.event.tree.EventTreeable;
 import uk.co.mcksn.events.exception.VerificationNtSuccessfulException;
 import uk.co.mcksn.events.plot.ExpectPlotable;
 import uk.co.mcksn.events.plot.SimulatePlotable;

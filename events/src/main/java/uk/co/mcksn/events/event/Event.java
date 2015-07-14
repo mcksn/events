@@ -1,11 +1,11 @@
 package uk.co.mcksn.events.event;
 
 import uk.co.mcksn.events.event.action.Action;
+import uk.co.mcksn.events.event.module.occured.AbstractEventOccuredModule;
 import uk.co.mcksn.events.event.result.Result;
 import uk.co.mcksn.events.event.verificationpolicy.VerificationPolicy;
 import uk.co.mcksn.events.plot.VerifyPlotable;
 import uk.co.mcksn.events.plot.verify.VerificationOutcome;
-import uk.co.mcksn.events.story.Story;
 
 /**
  * An Event is model of what the end user thinks will happen within the test
@@ -42,6 +42,8 @@ public interface Event<A extends Action, R extends Result, V extends Verificatio
 	EventState getState();
 
 	void setState(EventState flag);
+	
+	AbstractEventOccuredModule getEventOccurredModule();
 
 	VerificationOutcome getVerificationOutcome();
 

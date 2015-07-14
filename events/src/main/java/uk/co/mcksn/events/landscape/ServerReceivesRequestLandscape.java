@@ -10,9 +10,9 @@ import com.github.tomakehurst.wiremock.http.Response;
 
 import uk.co.mcksn.events.event.Event;
 import uk.co.mcksn.events.event.ServerReceivesRequestEvent;
-import uk.co.mcksn.events.event.multi.EventTreeable;
 import uk.co.mcksn.events.event.strategy.SRRVerificationStrategy;
 import uk.co.mcksn.events.event.strategy.VerificationStrategy;
+import uk.co.mcksn.events.event.tree.EventTreeable;
 import uk.co.mcksn.events.exception.VerificationNtSuccessfulException;
 import uk.co.mcksn.events.plot.WhenPlotable;
 import uk.co.mcksn.events.server.WireMockServerDef;
@@ -56,19 +56,12 @@ public class ServerReceivesRequestLandscape extends AbstractStoryLandscape<Serve
 		// todo
 	}
 
-	protected void when(Event event) {
+	protected void registerWaitPlotableEvent(Event event) {
 
 		ServerReceivesRequestEvent srrEvent = cast(event);
 		srrEvent.getWireMockServerDef().getWireMockServer().addStubMapping(srrEvent.getAction().getStubMapping());
 
-		((WhenPlotable) event).doWait();
-	}
 
-	public boolean verify(Event event) throws VerificationNtSuccessfulException {
-
-		ServerReceivesRequestEvent srrEvent = cast(event);
-		return srrEvent.getVerificationPolicy().getRequestPattern()
-				.isMatchedBy(srrEvent.getResult().getLoggedRequest());
 	}
 
 	public void simulate(Event event) {

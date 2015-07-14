@@ -5,22 +5,36 @@ import uk.co.mcksn.events.event.multi.EventTreeable;
 
 public class RecursiveEventTraverserImpl implements EventTreeTraverser {
 
-	public ComplexEvent getComplexEventOfRootTree(EventTreeable eventTree) {
+	/**
+	 *TODO Fix by using tree module
+	 * @param event
+	 * @return
+	 */
+	public ComplexEvent getComplexEventOfRootTree(Event event) {
 
-		return internalFindRootTreeOfGivenTree(eventTree).getComplexEvent();
+		return internalFindRootTreeOfGivenTree(event);
 	}
 
-	private EventTreeable internalFindRootTreeOfGivenTree(EventTreeable eventTree) {
+	private Event internalFindRootTreeOfGivenTree(Event event) {
 		
-		EventTreeable eventTreeParent = eventTree.getParent();
-		
-		if (eventTreeParent == null) {
-			return eventTree;
-		} else {
-			internalFindRootTreeOfGivenTree(eventTreeParent);
+		ComplexEvent complexEvent = null;
+		if (event instanceof ComplexEvent)
+		{
+			complexEvent = ((ComplexEvent)event).getParent();
+			
+			if (complexEvent == null) {
+				return (ComplexEvent)event);
+			} else {
+				internalFindRootTreeOfGivenTree(complexEvent);
+			}
 		}
+		else {
+			return event;
+		}
+		
 
-		return eventTreeParent;
+
+		return complexEvent;
 
 	}
 

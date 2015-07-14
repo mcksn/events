@@ -5,10 +5,10 @@ import java.util.Collection;
 import uk.co.mcksn.events.event.Event;
 import uk.co.mcksn.events.event.EventState;
 import uk.co.mcksn.events.event.ThreadSafeEventQueueWorker;
-import uk.co.mcksn.events.event.multi.ComplexEvent;
-import uk.co.mcksn.events.event.multi.EventTreeable;
+import uk.co.mcksn.events.event.complex.ComplexEvent;
 import uk.co.mcksn.events.event.multi.traverser.EventTreeTraverser;
 import uk.co.mcksn.events.event.multi.traverser.RecursiveEventTraverserImpl;
+import uk.co.mcksn.events.event.tree.EventTreeable;
 import uk.co.mcksn.events.plot.WaitPlotable;
 import uk.co.mcksn.events.plot.WhenPlotable;
 
