@@ -9,17 +9,13 @@ import org.slf4j.LoggerFactory;
 
 import uk.co.mcksn.events.event.Event;
 import uk.co.mcksn.events.event.ThreadSafeEventQueueWorker;
-import uk.co.mcksn.events.event.complex.ComplexEvent;
+import uk.co.mcksn.events.event.strategy.RegisterForWaitStrategyFactory;
 import uk.co.mcksn.events.event.strategy.VerificationStrategyFactory;
-import uk.co.mcksn.events.event.tree.EventTreeable;
-import uk.co.mcksn.events.exception.VerificationNtSuccessfulException;
 import uk.co.mcksn.events.landscape.LandscapeResolver;
 import uk.co.mcksn.events.plot.ExpectPlotable;
 import uk.co.mcksn.events.plot.Plot;
 import uk.co.mcksn.events.plot.SimulatePlotable;
-import uk.co.mcksn.events.plot.VerifyPlotable;
 import uk.co.mcksn.events.plot.WhenPlotable;
-import uk.co.mcksn.events.plot.verify.VerificationOutcome;
 
 /**
  * A story is a sequence of {@link Event}s that will perform a testable
@@ -54,81 +50,61 @@ public class Story {
 
 	private ThreadSafeEventQueueWorker eventQueueWorker = new ThreadSafeEventQueueWorker();
 
-	private VerificationStrategyFactory verificationStrategyFactory = null;
+	private VerificationStrategyFactory verificationStrategyFactory = new VerificationStrategyFactory(
+			availableLandscapes);
+	private RegisterForWaitStrategyFactory registerForWaitStrategyFactory = new RegisterForWaitStrategyFactory(
+			availableLandscapes);
 
-	public ThenStory simulate(SimulatePlotable event) {
-		Event castEvent = castToEvent(event);
-		logPlot(Plot.SIMULATE, castEvent);
-		eventQueueWorker.add(castEvent);
-		findSuitableLandscape(castEvent).simulate(castEvent);
+	public <SimulatePlotableEvent extends Event & SimulatePlotable> ThenStory simulate(
+			SimulatePlotableEvent simulatePlotableEvent) {
+
+		logPlot(Plot.SIMULATE, simulatePlotableEvent);
+		
+		simulatePlotableEvent.getEventOccurredModule().setVerificationStrategyFactory(verificationStrategyFactory);
+		eventQueueWorker.add(simulatePlotableEvent);
+
+		findSuitableLandscape(simulatePlotableEvent).simulate(simulatePlotableEvent);
+
 		return new ThenStory(this);
 
 	}
 
-	public ThenStory verify(VerifyPlotable event) {
+	public <WhenPlotableEvent extends Event & WhenPlotable> OccursThenStory when(WhenPlotableEvent whenPlotableEvent) {
 
-		if (event instanceof ComplexEvent) {
-			internalWhen((ComplexEvent) event);
-		}
+		logPlot(Plot.WHEN,whenPlotableEvent);
+		
 
-		if (event instanceof EventTreeable) {
-			internalWhen(((EventTreeable) event).getComplexEvent());
-		}
 
-		if (event instanceof Event) {
-			Event castEvent = castToEvent(event);
+		whenPlotableEvent.getTreeModule().setParentsOfAllChildren(null);
 
-			logPlot(Plot.VERIFY, castEvent);
+		whenPlotableEvent.getWaitModule().registerForWait(registerForWaitStrategyFactory);
 
-			VerificationOutcome outcome = castEvent.getVerificationOutcome();
-			boolean verifyAndContinueStory = castEvent.getVerificationPolicy().verifyAndContinueStory();
-			if (outcome.equals(!(outcome == VerificationOutcome.SUCCESS) && !verifyAndContinueStory)) {
-				throw new VerificationNtSuccessfulException(castEvent);
-			}
+		whenPlotableEvent.getEventOccurredModule().setVerificationStrategyFactory(verificationStrategyFactory);
+		eventQueueWorker.add(whenPlotableEvent);
 
-		}
+		whenPlotableEvent.getWaitModule().doWait();
 
-		return new ThenStory(this);
-	}
-
-	public OccursThenStory when(WhenPlotable event) {
-
-		// TODO Shouldnt assume all events in tree will be of same time. Do
-		// similar to verify
 		return new OccursThenStory(this);
 
 	}
 
-	private void internalWhen(ComplexEvent complexEvent) {
-		logPlot(Plot.WHEN, complexEvent);
+	public <ExpectPlotableEvent extends Event & ExpectPlotable> ThenStory expect(ExpectPlotableEvent expectPlotableEvent) {
+
+		logPlot(Plot.EXPECT,expectPlotableEvent);
 		
-		complexEvent.
-		complexEvent.setParentsOfAllChildren(null);
-		
-		((WhenPlotable) event).doWait();
 
-	}
+		expectPlotableEvent.getTreeModule().setParentsOfAllChildren(null);
 
-	private void internalVerify(ComplexEvent complexEvent) {
-		logPlot(Plot.VERIFY, complexEvent);
-		VerificationOutcome outcome = complexEvent.getUpdatedVerificationOutcome(verificationStrategyFactory);
-		boolean verifyAndContinueStory = complexEvent.getVerificationPolicy().verifyAndContinueStory();
-		if (outcome.equals(!(outcome == VerificationOutcome.SUCCESS) && !verifyAndContinueStory)) {
-			throw new VerificationNtSuccessfulException(complexEvent);
-		}
+		expectPlotableEvent.getWaitModule().registerForWait(registerForWaitStrategyFactory);
 
-	}
+		expectPlotableEvent.getEventOccurredModule().setVerificationStrategyFactory(verificationStrategyFactory);
+		eventQueueWorker.add(expectPlotableEvent);
 
-	public ThenStory expect(ExpectPlotable event) {
-		Event castEvent = castToEvent(event);
-		logPlot(Plot.EXPECT, castEvent);
-		eventQueueWorker.add(castEvent);
-		findSuitableLandscape(castEvent).expect(castEvent);
 		return new ThenStory(this);
 	}
 
 	public void logStorySoFar() {
-		System.out.println(eventQueueWorker.copy().toString());
+		// todo
 	}
 
 	public void logWhatActuallyHappened() {
@@ -149,12 +125,5 @@ public class Story {
 
 	private void logPlot(Plot plot, Event event) {
 		LOGGER.info("<<" + plot.toString() + ">>: " + event.getName());
-	}
-
-	private Event castToEvent(Object obj) {
-		if (obj instanceof Event) {
-			return (Event) obj;
-		} // TODO Create exception for this scenario
-		throw new RuntimeException("Object passed into story is not of type Event");
 	}
 }

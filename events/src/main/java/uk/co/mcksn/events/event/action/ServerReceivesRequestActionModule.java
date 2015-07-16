@@ -9,7 +9,7 @@ import com.github.tomakehurst.wiremock.stubbing.StubMapping;
 
 import uk.co.mcksn.events.server.WireMockServerDef;
 
-public class ServerReceivesRequestAction implements Action {
+public class ServerReceivesRequestActionModule implements ActionModule {
 
 	private StubMapping stubMapping = null;
 	public void givenRequest(MappingBuilder mappingBuilder)

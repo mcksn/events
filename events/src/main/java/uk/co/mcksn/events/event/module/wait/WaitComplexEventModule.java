@@ -14,7 +14,7 @@ public class WaitComplexEventModule extends AbstractWaitModule<ComplexEvent> {
 
 	public void registerForWait(RegisterForWaitStrategyFactory strategyFactory) {
 
-		for (Event aEvent : waitPlotable.getLeaves()) {
+		for (Event aEvent : waitPlotable.getChildren()) {
 
 			((WaitPlotable)aEvent).getWaitModule().registerForWait(strategyFactory);
 		}

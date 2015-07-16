@@ -7,32 +7,29 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
 import uk.co.mcksn.events.event.Event;
-import uk.co.mcksn.events.event.EventState;
-import uk.co.mcksn.events.event.action.NoAction;
+import uk.co.mcksn.events.event.action.NoActionModule;
 import uk.co.mcksn.events.event.module.occured.AbstractEventOccuredModule;
 import uk.co.mcksn.events.event.module.tree.AbstractTreeModule;
 import uk.co.mcksn.events.event.module.tree.TreeComplextEventModule;
-import uk.co.mcksn.events.event.module.tree.TreeEventModule;
 import uk.co.mcksn.events.event.module.wait.AbstractWaitModule;
 import uk.co.mcksn.events.event.module.wait.WaitComplexEventModule;
-import uk.co.mcksn.events.event.result.NoResult;
-import uk.co.mcksn.events.event.strategy.VerificationStrategyFactory;
-import uk.co.mcksn.events.event.verificationpolicy.ComplextVerificationPolicy;
+import uk.co.mcksn.events.event.result.NoResultModule;
 import uk.co.mcksn.events.plot.WaitPlotable;
-import uk.co.mcksn.events.plot.verify.VerificationOutcome;
+import uk.co.mcksn.events.plot.verify.NoVerficationPolicy;
 
-public class ComplexEvent implements Event<NoAction, NoResult, ComplextVerificationPolicy>, WaitPlotable {
+public class ComplexEvent implements Event<NoActionModule, NoResultModule, NoVerficationPolicy>, WaitPlotable {
 
-	private ComplextVerificationPolicy verificationPolicy;
 	private String name = "Not defined";
+	protected Collection<Event> children = new ArrayList<Event>();
+	
+	protected NoVerficationPolicy verficationPolicy = new NoVerficationPolicy();
+	protected NoResultModule resultModule = new NoResultModule();
+	protected NoActionModule actionModule = new NoActionModule();
+
 	protected AbstractWaitModule<ComplexEvent> waitModule = new WaitComplexEventModule(this);
 	protected AbstractEventOccuredModule<ComplexEvent> eventOccuredModule = null;
 	protected AbstractTreeModule<ComplexEvent> treeEventModule = new TreeComplextEventModule(this);
-	
-	protected Collection<Event> leaves = new ArrayList<Event>();
 
-	private EventState state = EventState.IN_PROGRESS;
-	private VerificationOutcome verificationOutcome = VerificationOutcome.UNKOWN;
 
 	protected ComplexEvent() {
 		super();
@@ -46,47 +43,20 @@ public class ComplexEvent implements Event<NoAction, NoResult, ComplextVerificat
 		this.name = name;
 	}
 
-	public NoAction getAction() {
-		return new NoAction();
+	public NoActionModule getActionModule() {
+		return new NoActionModule();
 	}
 
-	public void setAction(NoAction action) {
-		// do nothing
+	public void setActionModule(NoActionModule actionModule) {
+		this.actionModule = actionModule;
 	}
 
-	public NoResult getResult() {
-		return new NoResult();
+	public NoResultModule getResultModule() {
+		return new NoResultModule();
 	}
 
-	public void setResult(NoResult result) {
-		// do nothing
-	}
-
-	public ComplextVerificationPolicy getVerificationPolicy() {
-		return verificationPolicy;
-	}
-
-	public void setVerificationPolicy(ComplextVerificationPolicy verificationPolicy) {
-		this.verificationPolicy = verificationPolicy;
-
-	}
-
-	public EventState getState() {
-		return state;
-	}
-
-	public void setState(EventState state) {
-		this.state = state;
-	}
-
-	@Override
-	public VerificationOutcome getVerificationOutcome() {
-		return verificationOutcome;
-	}
-
-	@Override
-	public void setVerificationOutcome(VerificationOutcome verificationOutcome) {
-		this.verificationOutcome = verificationOutcome;
+	public void setResultModule(NoResultModule resultModule) {
+		this.resultModule = resultModule;
 	}
 
 	@Override
@@ -99,16 +69,27 @@ public class ComplexEvent implements Event<NoAction, NoResult, ComplextVerificat
 		return eventOccuredModule;
 	}
 
-	public Collection<Event> getLeaves() {
-		return leaves;
-	}
-
-	public void setLeaves(Collection<Event> leaves) {
-		this.leaves = leaves;
-	}
-	@Override
 	public AbstractTreeModule getTreeModule() {
 		return treeEventModule;
+	}
+
+	@Override
+	public NoVerficationPolicy getVerificationPolicyModule() {
+		return verficationPolicy;
+	}
+
+	@Override
+	public void setVerificationPolicyModule(NoVerficationPolicy verificationPolicy) {
+		this.verficationPolicy = verificationPolicy;
+
+	}
+
+	public Collection<Event> getChildren() {
+		return children;
+	}
+
+	public void setChildren(Collection<Event> children) {
+		this.children = children;
 	}
 
 	@Override
@@ -117,7 +98,5 @@ public class ComplexEvent implements Event<NoAction, NoResult, ComplextVerificat
 				+ ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE)
 				+ "\n\n############################################";
 	}
-
-
 
 }

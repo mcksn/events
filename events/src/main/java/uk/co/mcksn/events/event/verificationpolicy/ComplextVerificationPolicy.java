@@ -1,6 +1,6 @@
 package uk.co.mcksn.events.event.verificationpolicy;
 
-public class ComplextVerificationPolicy  implements VerificationPolicy{
+public class ComplextVerificationPolicy  implements VerificationPolicyModule{
 
 	private boolean verifyAndContinueStory =false;
 

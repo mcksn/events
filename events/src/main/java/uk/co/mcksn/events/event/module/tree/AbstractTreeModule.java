@@ -1,28 +1,26 @@
 package uk.co.mcksn.events.event.module.tree;
 
-import uk.co.mcksn.events.event.Event;
-import uk.co.mcksn.events.event.complex.ComplexEvent;
-import uk.co.mcksn.events.plot.WaitPlotable;
+import uk.co.mcksn.events.event.tree.EventTreeable;
 
-public class AbstractTreeModule<E extends Event> {
+public class AbstractTreeModule<E extends EventTreeable> {
 
-	protected E event = null;
-	protected Event parent = null;
+	protected E eventTreeable = null;
+	protected E parent = null;
 
 	public AbstractTreeModule(E event) {
 		super();
-		this.event = event;
+		this.eventTreeable = event;
 	}
 
-	public Event getParent() {
+	public E getParent() {
 		return parent;
 	}
 
-	public void setParent(ComplexEvent parent) {
+	public void setParent(E parent) {
 		this.parent = parent;
 	}
 
-	public void setParentsOfAllChildren(ComplexEvent rootParent) {
+	public void setParentsOfAllChildren(E rootParent) {
 		parent = rootParent;
 	}
 }

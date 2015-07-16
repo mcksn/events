@@ -8,38 +8,29 @@ import com.github.tomakehurst.wiremock.verification.LoggedRequest;
 import uk.co.mcksn.events.event.Event;
 import uk.co.mcksn.events.event.EventState;
 import uk.co.mcksn.events.event.ServerReceivesRequestEvent;
-import uk.co.mcksn.events.event.ThreadSafeEventQueueWorker;
 import uk.co.mcksn.events.event.multi.traverser.EventTreeTraverser;
 import uk.co.mcksn.events.event.multi.traverser.RecursiveEventTraverserImpl;
 import uk.co.mcksn.events.server.WireMockServerDef;
 import uk.co.mcksn.events.server.WireMockUtil;
 
-public class SRREventUpdateEventsQueueWorkImpl extends AbstractUpdateEventsQueueWork {
+public class SRREventUpdateEventsQueueWorkImpl extends AbstractUpdateEventsQueueWork<ServerReceivesRequestEvent> {
 
-	ThreadSafeEventQueueWorker threadSafeEventQueueWorker = null;
 	WireMockServerDef wireMockServerDef = null;
 	Request request = null;
 	EventTreeTraverser eventTreeTraverser = new RecursiveEventTraverserImpl();
 
-	public SRREventUpdateEventsQueueWorkImpl(ThreadSafeEventQueueWorker threadSafeEventQueueWorker,
-			WireMockServerDef wireMockServerDef, Request request) {
-		super(threadSafeEventQueueWorker);
+	public SRREventUpdateEventsQueueWorkImpl(WireMockServerDef wireMockServerDef, Request request) {
 		this.wireMockServerDef = wireMockServerDef;
 		this.request = request;
 	}
 
-	protected Event matchWorkToEvent(Collection<Event> events) {
-		Event event = WireMockUtil.findMatchingEvent(events, wireMockServerDef, request);
-		if (event == null) {
-			System.err.println("Event was not found during matching");
-		} else {
-			event.setState(EventState.OCCURRED);
-		}
-		return event;
+	protected ServerReceivesRequestEvent matchWorkToEvent(Collection<Event> events) {
+		return WireMockUtil.findMatchingEvent(events, wireMockServerDef, request);
 	}
 
-	protected void updateResponse(ServerReceivesRequestEvent matchedEvent) {
-		matchedEvent.getResult().setLoggedRequest(LoggedRequest.createFrom(request));
+	protected void updateResultModule(ServerReceivesRequestEvent matchedEvent) {
+		matchedEvent.getResultModule().setLoggedRequest(LoggedRequest.createFrom(request));
 	}
+
 
 }

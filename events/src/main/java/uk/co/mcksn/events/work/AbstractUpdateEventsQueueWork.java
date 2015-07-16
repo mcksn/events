@@ -2,54 +2,60 @@ package uk.co.mcksn.events.work;
 
 import java.util.Collection;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import uk.co.mcksn.events.event.Event;
 import uk.co.mcksn.events.event.EventState;
-import uk.co.mcksn.events.event.ThreadSafeEventQueueWorker;
-import uk.co.mcksn.events.event.complex.ComplexEvent;
+import uk.co.mcksn.events.event.module.occured.AbstractEventOccuredModule;
 import uk.co.mcksn.events.event.multi.traverser.EventTreeTraverser;
 import uk.co.mcksn.events.event.multi.traverser.RecursiveEventTraverserImpl;
-import uk.co.mcksn.events.event.tree.EventTreeable;
 import uk.co.mcksn.events.plot.WaitPlotable;
-import uk.co.mcksn.events.plot.WhenPlotable;
 
-public abstract class AbstractUpdateEventsQueueWork implements UpdateEventsQueueWork {
+public abstract class AbstractUpdateEventsQueueWork<E extends Event> implements UpdateEventsQueueWork {
 
-	private ThreadSafeEventQueueWorker threadSafeEventQueueWorker = null;
+	private final static Logger LOGGER = LoggerFactory.getLogger(AbstractUpdateEventsQueueWork.class);
 	private EventTreeTraverser eventTreeTraverser = new RecursiveEventTraverserImpl();
 
-	public AbstractUpdateEventsQueueWork(ThreadSafeEventQueueWorker threadSafeEventQueueWorker) {
+	public AbstractUpdateEventsQueueWork() {
 		super();
-		this.threadSafeEventQueueWorker = threadSafeEventQueueWorker;
 	}
 
 	public void doWork(Collection<Event> events) {
 
-		Event matchEvent = matchWorkToEvent(events);
+		E matchEvent = matchWorkToEvent(events);
+
 		if (matchEvent == null) {
-			System.out.println("WARN: Real world event could not be matched to registered event");
-			// TODO Use logger instead
+			System.err.println("Event was not found during matching");
+			return;
+		}
+		matchEvent.getEventOccurredModule().setState(EventState.OCCURRED);
+		LOGGER.info("Eyewitnesses say the following event occured: " + matchEvent.getName());
+
+		if (matchEvent == null) {
+			LOGGER.info("WARN: Real world event could not be matched to registered event");
 		}
 
-		if (matchEvent instanceof EventTreeable) {
-			ComplexEvent complexEvent = eventTreeTraverser.getComplexEventOfRootTree((EventTreeable) matchEvent);
-			EventState complextEventState = complexEvent.getUpdatedState();
-			if (complextEventState.equals(EventState.OCCURRED)) {
-				doNotifyOnEvent(complexEvent);
+		updateResultModule(matchEvent);
+
+		if (matchEvent instanceof WaitPlotable) {
+			WaitPlotable rootMatchedEvent = eventTreeTraverser.getRootEventTreeable((WaitPlotable) matchEvent);
+			EventState rootMatchedEventState = ((Event) rootMatchedEvent).getEventOccurredModule().getState();
+			if (rootMatchedEventState.equals(EventState.OCCURRED)) {
+				doNotifyOnEvent(rootMatchedEvent);
 			}
 		}
 
-		if (matchEvent instanceof WaitPlotable) {
-			doNotifyOnEvent((WaitPlotable) matchEvent);
-		}
-
 	}
 
-	private void doNotifyOnEvent(WaitPlotable event) {
-		if (event != null) {
-			event.doNotify();
+	private void doNotifyOnEvent(WaitPlotable waitPlotable) {
+		if (waitPlotable != null) {
+			waitPlotable.getWaitModule().doNotify();
 		}
 	}
 
-	protected abstract Event matchWorkToEvent(Collection<Event> events);
+	protected abstract E matchWorkToEvent(Collection<Event> events);
+
+	protected abstract void updateResultModule(E matchedEvent);
 
 }

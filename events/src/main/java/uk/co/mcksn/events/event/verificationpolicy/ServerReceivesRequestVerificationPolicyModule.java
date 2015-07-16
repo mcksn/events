@@ -6,10 +6,9 @@ import org.apache.commons.lang.builder.ToStringStyle;
 import com.github.tomakehurst.wiremock.client.RequestPatternBuilder;
 import com.github.tomakehurst.wiremock.matching.RequestPattern;
 
-public class ServerReceivesRequestVerificationPolicy implements VerificationPolicy {
+public class ServerReceivesRequestVerificationPolicyModule implements VerificationPolicyModule {
 
 	private RequestPattern requestPattern;
-	private boolean verifyAndContinueStory;
 
 	public void verify(RequestPatternBuilder requestPatternBuilder) {
 		requestPattern = requestPatternBuilder.build();
@@ -19,14 +18,6 @@ public class ServerReceivesRequestVerificationPolicy implements VerificationPoli
 		return requestPattern;
 	}
 
-	public void verifyAndContinueStory(boolean flag) {
-		verifyAndContinueStory = flag;
-
-	}
-
-	public boolean verifyAndContinueStory() {
-		return verifyAndContinueStory;
-	}
 	
 	@Override
 	public String toString() {

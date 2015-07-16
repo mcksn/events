@@ -3,12 +3,11 @@ package uk.co.mcksn.events.event.module.occured;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import uk.co.mcksn.events.event.Event;
 import uk.co.mcksn.events.event.EventState;
 import uk.co.mcksn.events.event.complex.ComplexEvent;
-import uk.co.mcksn.events.event.strategy.VerificationStrategy;
 import uk.co.mcksn.events.event.strategy.VerificationStrategyFactory;
-import uk.co.mcksn.events.event.tree.EventTreeable;
+import uk.co.mcksn.events.plot.VerifyPlotable;
+import uk.co.mcksn.events.plot.verify.NoVerficationPolicy;
 import uk.co.mcksn.events.plot.verify.VerificationOutcome;
 
 public abstract class ComplexEventOccuredModule extends AbstractEventOccuredModule<ComplexEvent> {
@@ -16,18 +15,26 @@ public abstract class ComplexEventOccuredModule extends AbstractEventOccuredModu
 	public ComplexEventOccuredModule(ComplexEvent event) {
 		super(event);
 	}
-	
-	public EventState getUpdatedState() {
-		if (event.getState().equals(EventState.OCCURRED)) {
-			return EventState.OCCURRED;
-		} else {
-			event.setState(calculateState());
-		}
-		return event.getState();
-	}
-	
-	protected abstract EventState calculateState();
 
+	protected EventState getInternalState() {
+		if (!this.state.equals(EventState.OCCURRED)) {
+			this.state = calculateState();
+		}
+
+		return state;
+	}
+
+	/**
+	 * Calculate state of all children by recursively calling
+	 * {@link AbstractEventOccuredModule#getState()}
+	 */
+	protected EventState calculateState() {
+		Collection<EventState> eventStatesFromLeaves = new ArrayList<EventState>();
+		for (VerifyPlotable aVerifyPlotable : this.verifyPlotable.getChildren()) {
+			eventStatesFromLeaves.add(aVerifyPlotable.getEventOccurredModule().getState());
+		}
+		return internalCalculateState(eventStatesFromLeaves);
+	}
 
 	/**
 	 * Assess the events of all leafs (given event occurred). Finds overall
@@ -39,29 +46,34 @@ public abstract class ComplexEventOccuredModule extends AbstractEventOccuredModu
 	private VerificationOutcome calculateVerificationOutcome(VerificationStrategyFactory verificationStrategyFactory) {
 
 		Collection<VerificationOutcome> verificationOutcomesFromLeaves = new ArrayList<VerificationOutcome>(
-				event.getLeaves().size());
+				this.verifyPlotable.getChildren().size());
 
-		for (Event aEvent : event.getLeaves()) {
+		for (VerifyPlotable aVerifyPlotable : this.verifyPlotable.getChildren()) {
 
-			if (!(aEvent instanceof ComplexEvent)) {
-				VerificationStrategy verificationStrategy = verificationStrategyFactory
-						.createVerificationStrategy((Event) aEvent);
-
-				verificationOutcomesFromLeaves.add(verificationStrategy.calculateVerificationOutcome((Event) aEvent));
-			}
+			verificationOutcomesFromLeaves
+					.add(aVerifyPlotable.getEventOccurredModule().getVerificationOutcome());
 		}
 		return VerificationOutcome.getOverallVerificationOutcome(verificationOutcomesFromLeaves);
+
 	}
 
-	public VerificationOutcome getUpdatedVerificationOutcome(VerificationStrategyFactory verificationStrategyFactory) {
-		VerificationOutcome outcome = event.getVerificationOutcome();
-		if (!outcome.equals(VerificationOutcome.UNKOWN)) {
-			return outcome;
-		} else {
-			event.setVerificationOutcome(calculateVerificationOutcome(verificationStrategyFactory));
+	protected VerificationOutcome internalGetVerificationOutcome() {
+		if (this.verificationOutcome.equals(VerificationOutcome.UNKOWN)) {
+			verificationOutcome = calculateVerificationOutcome(this.verificationStrategyFactory);
 		}
-		return event.getEventOccurredModule().getUpdatedVerificationOutcome(verificationStrategyFactory);
+
+		return this.verificationOutcome;
 	}
-	
+
+	public void setVerificationStrategyFactory(VerificationStrategyFactory verificationStrategyFactory) {
+		
+		this.verificationStrategyFactory = verificationStrategyFactory;
+		
+		for (VerifyPlotable aVerifyPlotable : this.verifyPlotable.getChildren()) {
+			aVerifyPlotable.getEventOccurredModule().setVerificationStrategyFactory(this.verificationStrategyFactory);
+		}
+	}
+
+	protected abstract EventState internalCalculateState(Collection<EventState> eventStates);
 
 }

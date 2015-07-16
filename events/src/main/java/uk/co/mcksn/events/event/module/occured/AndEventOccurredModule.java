@@ -1,6 +1,7 @@
 package uk.co.mcksn.events.event.module.occured;
 
-import uk.co.mcksn.events.event.Event;
+import java.util.Collection;
+
 import uk.co.mcksn.events.event.EventState;
 import uk.co.mcksn.events.event.complex.ComplexEvent;
 
@@ -10,22 +11,24 @@ public class AndEventOccurredModule extends ComplexEventOccuredModule {
 		super(event);
 	}
 
-	protected EventState calculateState() {
+
+	/**
+	 * If at least one not {@link EventState#OCCURRED} then return
+	 * {@link EventState#IN_PROGRESS}. If not return {@link EventState#OCCURRED}
+	 * 
+	 * @param eventStates
+	 * @return
+	 */
+	protected EventState internalCalculateState(Collection<EventState> eventStates) {
 		EventState stateSoFar = EventState.OCCURRED;
-		for (Event aEvent : event.getLeaves()) {
+		for (EventState aEventState : eventStates) {
 
-			if (!(aEvent instanceof ComplexEvent)) {
-				if (aEvent.getState().equals(EventState.OCCURRED)) {
-					stateSoFar = EventState.IN_PROGRESS;
-				}
-			}
-
-			if (!aEvent.getState().equals(EventState.OCCURRED)) {
+			if (!aEventState.equals(EventState.OCCURRED)) {
 				stateSoFar = EventState.IN_PROGRESS;
-
 			}
 		}
 		return stateSoFar;
+
 	}
 
 }

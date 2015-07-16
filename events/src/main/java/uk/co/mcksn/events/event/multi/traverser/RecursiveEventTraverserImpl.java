@@ -1,40 +1,26 @@
 package uk.co.mcksn.events.event.multi.traverser;
 
-import uk.co.mcksn.events.event.multi.ComplexEvent;
-import uk.co.mcksn.events.event.multi.EventTreeable;
+import uk.co.mcksn.events.event.tree.EventTreeable;
 
 public class RecursiveEventTraverserImpl implements EventTreeTraverser {
 
-	/**
-	 *TODO Fix by using tree module
-	 * @param event
-	 * @return
-	 */
-	public ComplexEvent getComplexEventOfRootTree(Event event) {
 
-		return internalFindRootTreeOfGivenTree(event);
+	public <T extends EventTreeable> T  getRootEventTreeable(T eventTreeable) {
+
+		return internalFindRootTreeOfGivenTree(eventTreeable);
 	}
 
-	private Event internalFindRootTreeOfGivenTree(Event event) {
-		
-		ComplexEvent complexEvent = null;
-		if (event instanceof ComplexEvent)
-		{
-			complexEvent = ((ComplexEvent)event).getParent();
-			
-			if (complexEvent == null) {
-				return (ComplexEvent)event);
-			} else {
-				internalFindRootTreeOfGivenTree(complexEvent);
-			}
-		}
-		else {
-			return event;
-		}
-		
+	private <T extends EventTreeable> T internalFindRootTreeOfGivenTree(T eventTreeable) {
 
+		EventTreeable rtnEvent = eventTreeable.getTreeModule().getParent();
 
-		return complexEvent;
+		if (rtnEvent == null) {
+			return eventTreeable;
+		} else {
+			internalFindRootTreeOfGivenTree(eventTreeable);
+		}
+
+		return eventTreeable;
 
 	}
 

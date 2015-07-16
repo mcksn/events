@@ -10,7 +10,7 @@ public class OrComplexEvent extends ComplexEvent {
 	public OrComplexEvent(Event[] leaves) {
 		super();
 		this.eventOccuredModule = new OrEventOccurredModule(this);
-		this.leaves.addAll(Arrays.asList(leaves));
+		this.children.addAll(Arrays.asList(leaves));
 	}
 
 

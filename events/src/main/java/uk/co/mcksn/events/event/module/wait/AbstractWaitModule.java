@@ -1,24 +1,13 @@
 package uk.co.mcksn.events.event.module.wait;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
 import uk.co.mcksn.events.event.Event;
-import uk.co.mcksn.events.event.EventState;
-import uk.co.mcksn.events.event.complex.ComplexEvent;
 import uk.co.mcksn.events.event.strategy.RegisterForWaitStrategyFactory;
-import uk.co.mcksn.events.event.strategy.VerificationStrategy;
-import uk.co.mcksn.events.event.strategy.VerificationStrategyFactory;
-import uk.co.mcksn.events.event.tree.EventTreeable;
 import uk.co.mcksn.events.plot.WaitPlotable;
-import uk.co.mcksn.events.plot.verify.VerificationOutcome;
 import uk.co.mcksn.events.story.Story;
 
 public abstract class AbstractWaitModule<W extends WaitPlotable> {
 
 	protected W waitPlotable;
-	private W parent;
-	protected Collection<WaitPlotable> leaves = new ArrayList<WaitPlotable>();
 
 	private Long timeout = 20000L;
 
@@ -47,7 +36,7 @@ public abstract class AbstractWaitModule<W extends WaitPlotable> {
 	 * </pre>
 	 */
 	public void doNotify() {
-		synchronized (this) {
+		synchronized (waitPlotable) {
 			waitPlotable.notify();
 
 		}
@@ -74,9 +63,9 @@ public abstract class AbstractWaitModule<W extends WaitPlotable> {
 	 * </pre>
 	 */
 	public void doWait() {
-		synchronized (this) {
+		synchronized (waitPlotable) {
 			try {
-				this.wait(timeout);
+				waitPlotable.wait(timeout);
 			} catch (InterruptedException e) {
 				System.err.println(e);
 				// TODO Log. Research how useful notifier pattern is. Would make
@@ -111,21 +100,6 @@ public abstract class AbstractWaitModule<W extends WaitPlotable> {
 		return timeout;
 	}
 
-	public W getParent() {
-		return this.parent;
-	}
-
-	public void setParent(W parent) {
-		this.parent = parent;
-	}
-
-	public void setParentsOfAllChildren(W rootParent) {
-		setParent(rootParent);
-		for (WaitPlotable waitPlotable : leaves) {
-			waitPlotable.getWaitModule().setParent(this.waitPlotable);
-		}
-	}
-	
 	public abstract void registerForWait(RegisterForWaitStrategyFactory strategyFactory);
 
 

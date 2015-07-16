@@ -2,7 +2,7 @@ package uk.co.mcksn.events.event.result;
 
 import com.github.tomakehurst.wiremock.verification.LoggedRequest;
 
-public class ServerRecievesRequestResult implements Result {
+public class ServerRecievesRequestResultModule implements ResultModule {
 
 	private LoggedRequest loggedRequest;
 

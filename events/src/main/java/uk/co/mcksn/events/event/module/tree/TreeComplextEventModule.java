@@ -12,7 +12,7 @@ public class TreeComplextEventModule extends AbstractTreeModule<ComplexEvent> {
 
 	public void setParentsOfAllChildren(ComplexEvent rootParent) {
 
-		for (Event aEvent : event.getLeaves()) {
+		for (Event aEvent : eventTreeable.getChildren()) {
 
 			((EventTreeable) aEvent).getTreeModule().setParentsOfAllChildren(rootParent);
 		}

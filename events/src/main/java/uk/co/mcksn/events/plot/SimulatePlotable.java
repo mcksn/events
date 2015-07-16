@@ -1,5 +1,5 @@
 package uk.co.mcksn.events.plot;
 
-public interface SimulatePlotable {
+public interface SimulatePlotable extends Nameable {
 
 }

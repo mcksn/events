@@ -5,12 +5,12 @@ import uk.co.mcksn.events.plot.WaitPlotable;
 
 public class WaitEventModule extends AbstractWaitModule<WaitPlotable> {
 
-	public WaitEventModule(WaitPlotable event) {
-		super(event);
+	public WaitEventModule(WaitPlotable waitPlotable) {
+		super(waitPlotable);
 	}
 
 	public void registerForWait(RegisterForWaitStrategyFactory strategyFactory) {
-		((WaitPlotable)waitPlotable).getWaitModule().registerForWait(strategyFactory);
+		strategyFactory.createRegisterForWaitStrategy(waitPlotable).registerForWait(waitPlotable);
 	}
 	
 }

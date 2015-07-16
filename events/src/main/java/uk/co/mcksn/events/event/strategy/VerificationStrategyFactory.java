@@ -5,6 +5,7 @@ import java.util.List;
 
 import uk.co.mcksn.events.event.Event;
 import uk.co.mcksn.events.landscape.LandscapeResolver;
+import uk.co.mcksn.events.plot.VerifyPlotable;
 import uk.co.mcksn.events.story.AbstractStoryLandscape;
 
 public class VerificationStrategyFactory {
@@ -19,9 +20,9 @@ public class VerificationStrategyFactory {
 	}
 
 
-	public VerificationStrategy createVerificationStrategy(Event event)
+	public VerificationStrategy createVerificationStrategy(VerifyPlotable verifyPlotable)
 	{
-		return findSuitableLandscape(event).getVerificationStrategy();
+		return findSuitableLandscape((Event)verifyPlotable).getVerificationStrategy();
 	}
 	
 

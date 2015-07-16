@@ -11,7 +11,7 @@ public class AndComplexEvent extends ComplexEvent {
 	public AndComplexEvent(Event[] leaves) {
 		super();
 		this.eventOccuredModule = new AndEventOccurredModule(this);
-		this.leaves.addAll(Arrays.asList(leaves));
+		this.children.addAll(Arrays.asList(leaves));
 	}
 
 }

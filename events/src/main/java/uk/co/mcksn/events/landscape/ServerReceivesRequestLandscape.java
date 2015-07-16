@@ -10,11 +10,11 @@ import com.github.tomakehurst.wiremock.http.Response;
 
 import uk.co.mcksn.events.event.Event;
 import uk.co.mcksn.events.event.ServerReceivesRequestEvent;
+import uk.co.mcksn.events.event.strategy.RegisterForWaitStrategy;
+import uk.co.mcksn.events.event.strategy.SRRRegisterForWaitStrategy;
 import uk.co.mcksn.events.event.strategy.SRRVerificationStrategy;
 import uk.co.mcksn.events.event.strategy.VerificationStrategy;
-import uk.co.mcksn.events.event.tree.EventTreeable;
-import uk.co.mcksn.events.exception.VerificationNtSuccessfulException;
-import uk.co.mcksn.events.plot.WhenPlotable;
+import uk.co.mcksn.events.plot.SimulatePlotable;
 import uk.co.mcksn.events.server.WireMockServerDef;
 import uk.co.mcksn.events.story.AbstractStoryLandscape;
 import uk.co.mcksn.events.work.SRREventUpdateEventsQueueWorkImpl;
@@ -41,8 +41,7 @@ public class ServerReceivesRequestLandscape extends AbstractStoryLandscape<Serve
 
 				public void requestReceived(Request request, Response response) {
 
-					SRREventUpdateEventsQueueWorkImpl updateEventWork = new SRREventUpdateEventsQueueWorkImpl(
-							getEventQueueWorker(), wireMockServerDef, request);
+					SRREventUpdateEventsQueueWorkImpl updateEventWork = new SRREventUpdateEventsQueueWorkImpl(wireMockServerDef, request);
 					getEventQueueWorker().doWork(updateEventWork);
 
 				}
@@ -51,39 +50,19 @@ public class ServerReceivesRequestLandscape extends AbstractStoryLandscape<Serve
 		}
 	}
 
-	protected void when(EventTreeable event) {
-
-		// todo
-	}
-
-	protected void registerWaitPlotableEvent(Event event) {
-
-		ServerReceivesRequestEvent srrEvent = cast(event);
-		srrEvent.getWireMockServerDef().getWireMockServer().addStubMapping(srrEvent.getAction().getStubMapping());
-
-
-	}
-
-	public void simulate(Event event) {
-		// todo
-	}
-
-	public void expect(Event event) {
-
-		ServerReceivesRequestEvent srrEvent = cast(event);
-		srrEvent.getWireMockServerDef().getWireMockServer().addStubMapping(srrEvent.getAction().getStubMapping());
-
-	}
-
-	private static ServerReceivesRequestEvent cast(Event event) {
-		if (event instanceof ServerReceivesRequestEvent) {
-			return (ServerReceivesRequestEvent) event;
-		}
-		throw new RuntimeException("Can not cast object to " + ServerReceivesRequestEvent.class.getName());
-	}
-
 	@Override
 	public VerificationStrategy getVerificationStrategy() {
 		return new SRRVerificationStrategy();
+	}
+
+	@Override
+	protected <SimulatePlotableEvent extends Event & SimulatePlotable> void simulate(
+			SimulatePlotableEvent simulatePlotableEvent) {
+		throw new UnsupportedOperationException();		
+	}
+
+	@Override
+	public RegisterForWaitStrategy getRegisterForWaitStrategy() {
+		return new SRRRegisterForWaitStrategy();
 	}
 }

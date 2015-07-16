@@ -22,7 +22,7 @@
 		<jackson-mapper-asl.version>1.9.13</jackson-mapper-asl.version>
 
 		<!-- Maven Plugins -->
-		<maven.war.plugin.version>2.6</maven.war.plugin.version>
+		<maven.war.plugin.version>2.4</maven.war.plugin.version>
 
 		<!-- Spring -->
 		<spring-framework.version>4.1.7.RELEASE</spring-framework.version>

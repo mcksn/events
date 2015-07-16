@@ -5,6 +5,7 @@ import java.util.List;
 
 import uk.co.mcksn.events.event.Event;
 import uk.co.mcksn.events.landscape.LandscapeResolver;
+import uk.co.mcksn.events.plot.WaitPlotable;
 import uk.co.mcksn.events.story.AbstractStoryLandscape;
 
 public class RegisterForWaitStrategyFactory {
@@ -19,9 +20,9 @@ public class RegisterForWaitStrategyFactory {
 	}
 
 
-	public RegisterForWaitStrategy createRegisterForWaitStrategy(Event event)
+	public RegisterForWaitStrategy createRegisterForWaitStrategy(WaitPlotable waitPlotable)
 	{
-		return findSuitableLandscape(event).getRegisterForWaitStrategy();
+		return findSuitableLandscape((Event)waitPlotable).getRegisterForWaitStrategy();
 	}
 	
 

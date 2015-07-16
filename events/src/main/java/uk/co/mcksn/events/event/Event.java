@@ -1,51 +1,37 @@
 package uk.co.mcksn.events.event;
 
-import uk.co.mcksn.events.event.action.Action;
-import uk.co.mcksn.events.event.module.occured.AbstractEventOccuredModule;
-import uk.co.mcksn.events.event.result.Result;
-import uk.co.mcksn.events.event.verificationpolicy.VerificationPolicy;
+import uk.co.mcksn.events.event.action.ActionModule;
+import uk.co.mcksn.events.event.result.ResultModule;
+import uk.co.mcksn.events.event.verificationpolicy.VerificationPolicyModule;
 import uk.co.mcksn.events.plot.VerifyPlotable;
-import uk.co.mcksn.events.plot.verify.VerificationOutcome;
 
 /**
  * An Event is model of what the end user thinks will happen within the test
  * environment. The framework can then use this description to gather data on
  * the occurrence of an event.
  * 
- * The end user sets the {@link Action} and the {@link VerificationPolicy}. The
+ * The end user sets the {@link ActionModule} and the {@link VerificationPolicyModule}. The
  * framework will use the action to decide on whether the event occured in the
- * test environment and record the results in the {@link Result}. When the end
- * user asks the framework to verify it can use the {@link VerificationPolicy}
+ * test environment and record the results in the {@link ResultModule}. When the end
+ * user asks the framework to verify it can use the {@link VerificationPolicyModule}
  * set initially.
  * 
  * @author mackson
+ * @param <V>
  *
  */
-public interface Event<A extends Action, R extends Result, V extends VerificationPolicy> extends VerifyPlotable {
+public interface Event<A extends ActionModule, R extends ResultModule, V extends VerificationPolicyModule> extends VerifyPlotable<V> {
 
-	String getName();
+	A getActionModule();
 
-	void setName(String name);
+	void setActionModule(A action);
 
-	A getAction();
+	R getResultModule();
 
-	void setAction(A action);
+	void setResultModule(R result);
 
-	R getResult();
+	V getVerificationPolicyModule();
 
-	void setResult(R result);
+	void setVerificationPolicyModule(V verificationPolicy);
 
-	V getVerificationPolicy();
-
-	void setVerificationPolicy(V verificationPolicy);
-
-	EventState getState();
-
-	void setState(EventState flag);
-	
-	AbstractEventOccuredModule getEventOccurredModule();
-
-	VerificationOutcome getVerificationOutcome();
-
-	void setVerificationOutcome(VerificationOutcome verificationOutcome);
 }
