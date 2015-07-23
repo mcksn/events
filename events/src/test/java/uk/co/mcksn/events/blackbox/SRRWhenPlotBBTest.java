@@ -22,13 +22,13 @@ import uk.co.mcksn.events.behavior.common.junit.AbstractWhenPlotBehavior;
 import uk.co.mcksn.events.blackbox.util.apache.httpclient.ApacheHttpClientUtil;
 import uk.co.mcksn.events.blackbox.util.common.UtilityProvider;
 import uk.co.mcksn.events.blackbox.util.wiremock.notifier.WireMockNotifierImpl;
-import uk.co.mcksn.events.event.EventState;
-import uk.co.mcksn.events.event.ServerReceivesRequestEvent;
-import uk.co.mcksn.events.landscape.ServerReceivesRequestLandscape;
-import uk.co.mcksn.events.plot.verify.VerificationOutcome;
-import uk.co.mcksn.events.server.WireMockServerDef;
-import uk.co.mcksn.events.story.AbstractStoryLandscape;
-import uk.co.mcksn.events.story.Story;
+import uk.co.mcksn.events.enumeration.EventState;
+import uk.co.mcksn.events.enumeration.VerificationOutcome;
+import uk.co.mcksn.events.eventstream.AbstractEventHandler;
+import uk.co.mcksn.events.eventstream.EventStream;
+import uk.co.mcksn.events.incominghttp.wiremock.ServerReceivesRequestEvent;
+import uk.co.mcksn.events.incominghttp.wiremock.ServerReceivesRequestEventHandler;
+import uk.co.mcksn.events.incominghttp.wiremock.WireMockServerDef;
 
 public class SRRWhenPlotBBTest extends AbstractWhenPlotBehavior {
 
@@ -41,7 +41,7 @@ public class SRRWhenPlotBBTest extends AbstractWhenPlotBehavior {
 
 	private static final UtilityProvider UTILITY_PROVIDER = new UtilityProvider();
 
-	private AbstractStoryLandscape<?> storyLandscape = null;
+	private AbstractEventHandler<?> storyLandscape = null;
 
 	private WireMockServerDef wireMockServerDefB = WireMockServerDef.buildDefintion(
 			new WireMockServer(wireMockConfig().notifier(new WireMockNotifierImpl()).port(8051)), "Comp B");
@@ -75,7 +75,7 @@ public class SRRWhenPlotBBTest extends AbstractWhenPlotBehavior {
 
 	@Before
 	public void before() {
-		storyLandscape = ServerReceivesRequestLandscape.looksLike(wireMockServerDefB, wireMockServerDefC);
+		storyLandscape = ServerReceivesRequestEventHandler.looksLike(wireMockServerDefB, wireMockServerDefC);
 	}
 
 	@After
@@ -99,12 +99,12 @@ public class SRRWhenPlotBBTest extends AbstractWhenPlotBehavior {
 		ServerReceivesRequestEvent reqToCompBWithResponse1 = defineRequestsToCompB("Response 1", behaviorEnum);
 
 		
-		Story story = Story.given(storyLandscape);
+		EventStream eventStream = EventStream.given(storyLandscape);
 		
 		// invoke test
 		UTILITY_PROVIDER.getNewHttpClientInstance(STUB_URL).sendGet(behaviorEnum.name());
 		
-		story.when(reqToCompBWithResponse1);
+		eventStream.when(reqToCompBWithResponse1);
 		
 		Assert.assertEquals(EventState.OCCURRED, reqToCompBWithResponse1.getEventOccurredModule().getState());
 		Assert.assertEquals(VerificationOutcome.SUCCESS, reqToCompBWithResponse1.getEventOccurredModule().getVerificationOutcome()); 
@@ -119,7 +119,7 @@ public class SRRWhenPlotBBTest extends AbstractWhenPlotBehavior {
 	 * defineRequestsToCompB("Response 1"); ServerReceivesRequestEvent
 	 * reqToCompBWithResponse2 = defineRequestsToCompB("Response 2");
 	 * 
-	 * //@formatter:off Story story = Story.given(storyLandscape)
+	 * //@formatter:off EventStream story = EventStream.given(storyLandscape)
 	 * .when(and(reqToCompBWithResponse1,reqToCompBWithResponse2))
 	 * .occurs_then_verify(reqToCompBWithResponse1) .and_the_story_continues();
 	 * 
@@ -135,7 +135,7 @@ public class SRRWhenPlotBBTest extends AbstractWhenPlotBehavior {
 	 * ComplexEvent complexEvent = or(reqToCompBWithResponse1,
 	 * reqToCompBWithResponse2).getComplexEvent();
 	 * 
-	 * //@formatter:off Story story = Story.given(storyLandscape)
+	 * //@formatter:off EventStream story = EventStream.given(storyLandscape)
 	 * .when(complexEvent) .occurs_then_verify(complexEvent)
 	 * .and_the_story_continues();
 	 * 
@@ -157,7 +157,7 @@ public class SRRWhenPlotBBTest extends AbstractWhenPlotBehavior {
 	 * and(reqToCompBWithResponse2, reqToCompBWithResponse3))
 	 * .getComplexEvent();
 	 * 
-	 * //@formatter:off Story story = Story.given(storyLandscape)
+	 * //@formatter:off EventStream story = EventStream.given(storyLandscape)
 	 * .when(complexEvent) .occurs_then_verify(complexEvent)
 	 * .and_the_story_continues();
 	 * 

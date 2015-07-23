@@ -7,29 +7,30 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
 import uk.co.mcksn.events.event.Event;
-import uk.co.mcksn.events.event.action.NoActionModule;
-import uk.co.mcksn.events.event.module.occured.AbstractEventOccuredModule;
+import uk.co.mcksn.events.event.module.action.NoActionModule;
+import uk.co.mcksn.events.event.module.occured.AbstractOccuredModule;
+import uk.co.mcksn.events.event.module.result.NoResultModule;
 import uk.co.mcksn.events.event.module.tree.AbstractTreeModule;
-import uk.co.mcksn.events.event.module.tree.TreeComplextEventModule;
+import uk.co.mcksn.events.event.module.tree.TreeComplexModule;
+import uk.co.mcksn.events.event.module.vpolicy.NoVerificationPolicyModule;
 import uk.co.mcksn.events.event.module.wait.AbstractWaitModule;
-import uk.co.mcksn.events.event.module.wait.WaitComplexEventModule;
-import uk.co.mcksn.events.event.result.NoResultModule;
-import uk.co.mcksn.events.plot.WaitPlotable;
-import uk.co.mcksn.events.plot.verify.NoVerficationPolicy;
+import uk.co.mcksn.events.event.module.wait.WaitComplexModule;
+import uk.co.mcksn.events.type.Waitable;
 
-public class ComplexEvent implements Event<NoActionModule, NoResultModule, NoVerficationPolicy>, WaitPlotable {
+public abstract class ComplexEvent
+		implements Event<NoActionModule, NoResultModule, NoVerificationPolicyModule>, Waitable {
 
 	private String name = "Not defined";
+
 	protected Collection<Event> children = new ArrayList<Event>();
-	
-	protected NoVerficationPolicy verficationPolicy = new NoVerficationPolicy();
+
+	protected NoVerificationPolicyModule verificationPolicyModule = new NoVerificationPolicyModule();
 	protected NoResultModule resultModule = new NoResultModule();
 	protected NoActionModule actionModule = new NoActionModule();
 
-	protected AbstractWaitModule<ComplexEvent> waitModule = new WaitComplexEventModule(this);
-	protected AbstractEventOccuredModule<ComplexEvent> eventOccuredModule = null;
-	protected AbstractTreeModule<ComplexEvent> treeEventModule = new TreeComplextEventModule(this);
-
+	protected AbstractWaitModule<ComplexEvent> waitModule = new WaitComplexModule(this);
+	protected AbstractOccuredModule<ComplexEvent> eventOccuredModule = null;
+	protected AbstractTreeModule<ComplexEvent> treeEventModule = new TreeComplexModule(this);
 
 	protected ComplexEvent() {
 		super();
@@ -44,7 +45,7 @@ public class ComplexEvent implements Event<NoActionModule, NoResultModule, NoVer
 	}
 
 	public NoActionModule getActionModule() {
-		return new NoActionModule();
+		return actionModule;
 	}
 
 	public void setActionModule(NoActionModule actionModule) {
@@ -52,7 +53,7 @@ public class ComplexEvent implements Event<NoActionModule, NoResultModule, NoVer
 	}
 
 	public NoResultModule getResultModule() {
-		return new NoResultModule();
+		return resultModule;
 	}
 
 	public void setResultModule(NoResultModule resultModule) {
@@ -65,7 +66,7 @@ public class ComplexEvent implements Event<NoActionModule, NoResultModule, NoVer
 	}
 
 	@Override
-	public AbstractEventOccuredModule getEventOccurredModule() {
+	public AbstractOccuredModule getEventOccurredModule() {
 		return eventOccuredModule;
 	}
 
@@ -74,13 +75,13 @@ public class ComplexEvent implements Event<NoActionModule, NoResultModule, NoVer
 	}
 
 	@Override
-	public NoVerficationPolicy getVerificationPolicyModule() {
-		return verficationPolicy;
+	public NoVerificationPolicyModule getVerificationPolicyModule() {
+		return verificationPolicyModule;
 	}
 
 	@Override
-	public void setVerificationPolicyModule(NoVerficationPolicy verificationPolicy) {
-		this.verficationPolicy = verificationPolicy;
+	public void setVerificationPolicyModule(NoVerificationPolicyModule verificationPolicyModule) {
+		this.verificationPolicyModule = verificationPolicyModule;
 
 	}
 
