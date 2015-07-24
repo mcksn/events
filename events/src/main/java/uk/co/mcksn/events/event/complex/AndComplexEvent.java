@@ -4,8 +4,8 @@ import java.util.Arrays;
 
 import uk.co.mcksn.events.event.Event;
 import uk.co.mcksn.events.event.module.occured.AndOccurredModule;
-import uk.co.mcksn.events.event.module.wait.WaitComplexModule;
 
+@SuppressWarnings("rawtypes")
 public class AndComplexEvent extends ComplexEvent {
 
 	public AndComplexEvent(Event[] leaves) {

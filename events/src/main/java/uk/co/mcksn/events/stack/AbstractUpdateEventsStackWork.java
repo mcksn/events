@@ -7,11 +7,11 @@ import org.slf4j.LoggerFactory;
 
 import uk.co.mcksn.events.enumeration.EventState;
 import uk.co.mcksn.events.event.Event;
-import uk.co.mcksn.events.event.module.occured.AbstractOccuredModule;
-import uk.co.mcksn.events.tree.TreeTraverser;
 import uk.co.mcksn.events.tree.RecursiveTreeTraverserImpl;
+import uk.co.mcksn.events.tree.TreeTraverser;
 import uk.co.mcksn.events.type.Waitable;
 
+@SuppressWarnings("rawtypes")
 public abstract class AbstractUpdateEventsStackWork<E extends Event> implements UpdateEventsStackWork {
 
 	private final static Logger LOGGER = LoggerFactory.getLogger(AbstractUpdateEventsStackWork.class);
@@ -26,16 +26,12 @@ public abstract class AbstractUpdateEventsStackWork<E extends Event> implements 
 		E matchEvent = matchWorkToEvent(events);
 
 		if (matchEvent == null) {
-			System.err.println("Event was not found during matching");
+			System.err.println("Event ocurred but not on the Stream.");
 			return;
 		}
 		matchEvent.getEventOccurredModule().setState(EventState.OCCURRED);
 		LOGGER.info("Eyewitnesses say the following event occured: " + matchEvent.getName());
-
-		if (matchEvent == null) {
-			LOGGER.info("WARN: Real world event could not be matched to registered event");
-		}
-
+		
 		updateResultModule(matchEvent);
 
 		if (matchEvent instanceof Waitable) {

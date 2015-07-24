@@ -24,6 +24,7 @@ import uk.co.mcksn.events.type.Whenable;
  * @author mackson
  *
  */
+@SuppressWarnings("rawtypes")
 public class EventStream {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(EventStream.class);
@@ -34,11 +35,11 @@ public class EventStream {
 	 * @param abstractEventHandlers
 	 * @return
 	 */
-	public static EventStream given(AbstractEventHandler<? extends Event> abstractEventHandlers) {
+	public static EventStream given(AbstractEventHandler abstractEventHandlers) {
 
 		EventStream newEventStream = new EventStream();
-		for (AbstractEventHandler storyLandscape : Arrays.asList(abstractEventHandlers)) {
-			storyLandscape.setEventStream(newEventStream);
+		for (AbstractEventHandler eventHandler : Arrays.asList(abstractEventHandlers)) {
+			eventHandler.setEventStream(newEventStream);
 		}
 
 		newEventStream.availableEventHandlers.addAll(Arrays.asList(abstractEventHandlers));
@@ -47,7 +48,7 @@ public class EventStream {
 		return newEventStream;
 	}
 
-	private List<AbstractEventHandler<? extends Event>> availableEventHandlers = new ArrayList<AbstractEventHandler<? extends Event>>();
+	private List<AbstractEventHandler> availableEventHandlers = new ArrayList<AbstractEventHandler>();
 
 	private ThreadSafeEventStackWorker eventStackWorker = new ThreadSafeEventStackWorker();
 
@@ -56,15 +57,15 @@ public class EventStream {
 	private RegisterForWaitStrategyFactory registerForWaitStrategyFactory = new RegisterForWaitStrategyFactory(
 			availableEventHandlers);
 
-	public <SimulateableEvent extends Event & Simulateable> ThenStream simulate(
-			SimulateableEvent simulatePlotableEvent) {
+	public <SimulateableEvent extends Event & Simulateable> ThenStream simulate(SimulateableEvent simulateableEvent) {
 
-		logRegisterWithStream(RegisterWithStreamType.SIMULATE, simulatePlotableEvent);
+		logRegisterWithStream(RegisterWithStreamType.SIMULATE, simulateableEvent);
 
-		simulatePlotableEvent.getEventOccurredModule().setVerificationStrategyFactory(verificationStrategyFactory);
-		eventStackWorker.add(simulatePlotableEvent);
+		simulateableEvent.getEventOccurredModule().setVerificationStrategyFactory(verificationStrategyFactory);
+		eventStackWorker.add(simulateableEvent);
 
-		findSuitableLandscape(simulatePlotableEvent).simulate(simulatePlotableEvent);
+		EventHandlerResolver.findApplicableHandler(SimulateHandlerable.class, simulateableEvent,
+				availableEventHandlers);
 
 		return new ThenStream(this);
 
@@ -72,11 +73,13 @@ public class EventStream {
 
 	public <WhenableEvent extends Event & Whenable> OccursThenStream when(WhenableEvent whenableEvent) {
 
-		// need to verify that is complex, all childrens (recursive) are wheanable
+		// need to verify that is complex, all childrens (recursive) are
+		// wheanable
 		// may be done by whenModule
-		// or just make sure they are all of the type of whenable by passing in interface.class within a strategy 
+		// or just make sure they are all of the type of whenable by passing in
+		// interface.class within a strategy
 		// i.e recursive#isOfWaitableType(Class<Whenable> i)
-		
+
 		logRegisterWithStream(RegisterWithStreamType.WHEN, whenableEvent);
 
 		whenableEvent.getTreeModule().setParentsOfAllChildren(null);
@@ -92,12 +95,12 @@ public class EventStream {
 
 	}
 
-	public <ExpectableEvent extends Event & Expectable> ThenStream expect(
-			ExpectableEvent expectableEvent) {
+	public <ExpectableEvent extends Event & Expectable> ThenStream expect(ExpectableEvent expectableEvent) {
 
-		//need to verify that is complex, all childrens (recursive) are expectable
-		//may be done by expectModule
-		
+		// need to verify that is complex, all childrens (recursive) are
+		// expectable
+		// may be done by expectModule
+
 		logRegisterWithStream(RegisterWithStreamType.EXPECT, expectableEvent);
 
 		expectableEvent.getTreeModule().setParentsOfAllChildren(null);
@@ -116,10 +119,6 @@ public class EventStream {
 
 	void setEventQueueWorker(ThreadSafeEventStackWorker eventStackWorker) {
 		this.eventStackWorker = eventStackWorker;
-	}
-
-	private AbstractEventHandler<? extends Event> findSuitableLandscape(Event event) {
-		return EventHandlerResolver.findApplicableLandscape(event, availableEventHandlers);
 	}
 
 	private void logRegisterWithStream(RegisterWithStreamType registerWithStreamType, Event event) {

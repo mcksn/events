@@ -12,20 +12,20 @@ import uk.co.mcksn.events.event.Event;
 import uk.co.mcksn.events.eventhandler.strategy.RegisterForWaitStrategy;
 import uk.co.mcksn.events.eventhandler.strategy.VerificationStrategy;
 import uk.co.mcksn.events.eventstream.AbstractEventHandler;
+import uk.co.mcksn.events.eventstream.WaitHandlerable;
 import uk.co.mcksn.events.stack.SRREventUpdateEventsStackWorkImpl;
-import uk.co.mcksn.events.type.Simulateable;
 
-public class ServerReceivesRequestEventHandler extends AbstractEventHandler<ServerReceivesRequestEvent> {
+public class ServerReceivesRequestEventHandler extends AbstractEventHandler implements WaitHandlerable {
 
 	private List<WireMockServerDef> registeredWireMockServerDefs = new ArrayList<WireMockServerDef>();
 
-	public static AbstractEventHandler<?> looksLike(WireMockServerDef... wireMockServerDefs) {
+	public static AbstractEventHandler looksLike(WireMockServerDef... wireMockServerDefs) {
 
-		ServerReceivesRequestEventHandler landscape = new ServerReceivesRequestEventHandler();
-		landscape.registeredWireMockServerDefs.addAll(Arrays.asList(wireMockServerDefs));
-		landscape.configureEachWireMockServer();
+		ServerReceivesRequestEventHandler eventHandler = new ServerReceivesRequestEventHandler();
+		eventHandler.registeredWireMockServerDefs.addAll(Arrays.asList(wireMockServerDefs));
+		eventHandler.configureEachWireMockServer();
 
-		return landscape;
+		return eventHandler;
 	}
 
 	protected void configureEachWireMockServer() {
@@ -52,13 +52,12 @@ public class ServerReceivesRequestEventHandler extends AbstractEventHandler<Serv
 	}
 
 	@Override
-	protected <SimulatePlotableEvent extends Event & Simulateable> void simulate(
-			SimulatePlotableEvent simulatePlotableEvent) {
-		throw new UnsupportedOperationException();		
+	public RegisterForWaitStrategy getRegisterForWaitStrategy() {
+		return new SRRRegisterForWaitStrategy();
 	}
 
 	@Override
-	public RegisterForWaitStrategy getRegisterForWaitStrategy() {
-		return new SRRRegisterForWaitStrategy();
+	public Class<? extends Event> getEventType() {
+		return ServerReceivesRequestEvent.class;
 	}
 }

@@ -8,6 +8,7 @@ import com.google.common.collect.ImmutableList;
 
 import uk.co.mcksn.events.event.Event;
 
+@SuppressWarnings("rawtypes")
 public class ThreadSafeEventStackWorker {
 
 	private Queue<Event> eventStack = new LinkedList<Event>();

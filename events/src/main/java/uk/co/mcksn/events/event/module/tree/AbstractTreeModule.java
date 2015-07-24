@@ -2,6 +2,7 @@ package uk.co.mcksn.events.event.module.tree;
 
 import uk.co.mcksn.events.tree.Treeable;
 
+
 public class AbstractTreeModule<E extends Treeable> {
 
 	protected E eventTreeable = null;

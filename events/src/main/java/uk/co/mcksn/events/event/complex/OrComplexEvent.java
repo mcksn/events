@@ -5,6 +5,7 @@ import java.util.Arrays;
 import uk.co.mcksn.events.event.Event;
 import uk.co.mcksn.events.event.module.occured.OrOccurredModule;
 
+@SuppressWarnings("rawtypes")
 public class OrComplexEvent extends ComplexEvent {
 
 	public OrComplexEvent(Event[] leaves) {
@@ -12,6 +13,5 @@ public class OrComplexEvent extends ComplexEvent {
 		this.eventOccuredModule = new OrOccurredModule(this);
 		this.children.addAll(Arrays.asList(leaves));
 	}
-
 
 }

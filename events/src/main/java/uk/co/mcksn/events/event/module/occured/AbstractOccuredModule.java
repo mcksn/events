@@ -8,6 +8,7 @@ import uk.co.mcksn.events.enumeration.VerificationOutcome;
 import uk.co.mcksn.events.eventhandler.strategy.VerificationStrategyFactory;
 import uk.co.mcksn.events.type.Verifyable;
 
+@SuppressWarnings("rawtypes")
 public abstract class AbstractOccuredModule<VPlot extends Verifyable> {
 
 	private final static Logger LOGGER = LoggerFactory.getLogger(AbstractOccuredModule.class);

@@ -1,12 +1,8 @@
 package uk.co.mcksn.events.blackbox;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
-import static com.github.tomakehurst.wiremock.client.WireMock.get;
-import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
-import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
-import static uk.co.mcksn.events.behavior.common.enumeration.AbstractWhenPlotBehaviorEnumeration.SHOULD_wait_for_event_to_occur_WHEN_when_event_GIVEN_event_can_be_waited_for;
+import static com.github.tomakehurst.wiremock.client.WireMock.*;
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.*;
+import static uk.co.mcksn.events.behavior.common.enumeration.AbstractWhenPlotBehaviorEnumeration.*;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -19,7 +15,6 @@ import com.github.tomakehurst.wiremock.WireMockServer;
 
 import uk.co.mcksn.events.behavior.common.enumeration.AbstractWhenPlotBehaviorEnumeration;
 import uk.co.mcksn.events.behavior.common.junit.AbstractWhenPlotBehavior;
-import uk.co.mcksn.events.blackbox.util.apache.httpclient.ApacheHttpClientUtil;
 import uk.co.mcksn.events.blackbox.util.common.UtilityProvider;
 import uk.co.mcksn.events.blackbox.util.wiremock.notifier.WireMockNotifierImpl;
 import uk.co.mcksn.events.enumeration.EventState;
@@ -41,7 +36,7 @@ public class SRRWhenPlotBBTest extends AbstractWhenPlotBehavior {
 
 	private static final UtilityProvider UTILITY_PROVIDER = new UtilityProvider();
 
-	private AbstractEventHandler<?> storyLandscape = null;
+	private AbstractEventHandler srrEventHandler = null;
 
 	private WireMockServerDef wireMockServerDefB = WireMockServerDef.buildDefintion(
 			new WireMockServer(wireMockConfig().notifier(new WireMockNotifierImpl()).port(8051)), "Comp B");
@@ -75,7 +70,7 @@ public class SRRWhenPlotBBTest extends AbstractWhenPlotBehavior {
 
 	@Before
 	public void before() {
-		storyLandscape = ServerReceivesRequestEventHandler.looksLike(wireMockServerDefB, wireMockServerDefC);
+		srrEventHandler = ServerReceivesRequestEventHandler.looksLike(wireMockServerDefB, wireMockServerDefC);
 	}
 
 	@After
@@ -97,9 +92,8 @@ public class SRRWhenPlotBBTest extends AbstractWhenPlotBehavior {
 
 		final AbstractWhenPlotBehaviorEnumeration behaviorEnum = SHOULD_wait_for_event_to_occur_WHEN_when_event_GIVEN_event_can_be_waited_for;
 		ServerReceivesRequestEvent reqToCompBWithResponse1 = defineRequestsToCompB("Response 1", behaviorEnum);
-
 		
-		EventStream eventStream = EventStream.given(storyLandscape);
+		EventStream eventStream = EventStream.given(srrEventHandler);
 		
 		// invoke test
 		UTILITY_PROVIDER.getNewHttpClientInstance(STUB_URL).sendGet(behaviorEnum.name());
@@ -119,7 +113,7 @@ public class SRRWhenPlotBBTest extends AbstractWhenPlotBehavior {
 	 * defineRequestsToCompB("Response 1"); ServerReceivesRequestEvent
 	 * reqToCompBWithResponse2 = defineRequestsToCompB("Response 2");
 	 * 
-	 * //@formatter:off EventStream story = EventStream.given(storyLandscape)
+	 * //@formatter:off EventStream story = EventStream.given(srrEventHandler)
 	 * .when(and(reqToCompBWithResponse1,reqToCompBWithResponse2))
 	 * .occurs_then_verify(reqToCompBWithResponse1) .and_the_story_continues();
 	 * 
@@ -135,7 +129,7 @@ public class SRRWhenPlotBBTest extends AbstractWhenPlotBehavior {
 	 * ComplexEvent complexEvent = or(reqToCompBWithResponse1,
 	 * reqToCompBWithResponse2).getComplexEvent();
 	 * 
-	 * //@formatter:off EventStream story = EventStream.given(storyLandscape)
+	 * //@formatter:off EventStream story = EventStream.given(srrEventHandler)
 	 * .when(complexEvent) .occurs_then_verify(complexEvent)
 	 * .and_the_story_continues();
 	 * 
@@ -157,7 +151,7 @@ public class SRRWhenPlotBBTest extends AbstractWhenPlotBehavior {
 	 * and(reqToCompBWithResponse2, reqToCompBWithResponse3))
 	 * .getComplexEvent();
 	 * 
-	 * //@formatter:off EventStream story = EventStream.given(storyLandscape)
+	 * //@formatter:off EventStream story = EventStream.given(srrEventHandler)
 	 * .when(complexEvent) .occurs_then_verify(complexEvent)
 	 * .and_the_story_continues();
 	 * 

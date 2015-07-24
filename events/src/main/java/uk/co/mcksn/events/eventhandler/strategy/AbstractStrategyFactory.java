@@ -7,16 +7,24 @@ import uk.co.mcksn.events.event.Event;
 import uk.co.mcksn.events.eventhandler.util.EventHandlerResolver;
 import uk.co.mcksn.events.eventstream.AbstractEventHandler;
 
+@SuppressWarnings("rawtypes")
 public class AbstractStrategyFactory {
+	
+	EventHandlerResolver eventHandlerResolver = new EventHandlerResolver();
 
-	protected List<AbstractEventHandler<? extends Event>> availableEventHandlers = new ArrayList<AbstractEventHandler<? extends Event>>();
+	protected List<AbstractEventHandler> availableEventHandlers = new ArrayList<AbstractEventHandler>();
 
-	public AbstractStrategyFactory(List<AbstractEventHandler<? extends Event>> availableEventHandlers) {
+	public AbstractStrategyFactory(List<AbstractEventHandler> availableEventHandlers) {
 		this.availableEventHandlers = availableEventHandlers;
 	}
 
-	protected AbstractEventHandler<? extends Event> findSuitableLandscape(Event event) {
-		return EventHandlerResolver.findApplicableLandscape(event, availableEventHandlers);
+	protected <T> T findSuitableLandscape(Class<T> returnType, Event event) {
+		return EventHandlerResolver.findApplicableHandler(returnType, event, availableEventHandlers);
 	}
+	
+	protected AbstractEventHandler findSuitableLandscape(Event event) {
+		return EventHandlerResolver.findApplicableHandler(AbstractEventHandler.class, event, availableEventHandlers);
+	}
+
 
 }

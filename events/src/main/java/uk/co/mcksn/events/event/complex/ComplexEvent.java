@@ -17,6 +17,8 @@ import uk.co.mcksn.events.event.module.wait.AbstractWaitModule;
 import uk.co.mcksn.events.event.module.wait.WaitComplexModule;
 import uk.co.mcksn.events.type.Waitable;
 
+
+@SuppressWarnings("rawtypes")
 public abstract class ComplexEvent
 		implements Event<NoActionModule, NoResultModule, NoVerificationPolicyModule>, Waitable {
 

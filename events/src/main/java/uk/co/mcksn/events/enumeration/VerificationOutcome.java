@@ -1,6 +1,5 @@
 package uk.co.mcksn.events.enumeration;
 
-import java.util.Arrays;
 import java.util.Collection;
 
 public enum VerificationOutcome {

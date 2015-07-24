@@ -2,6 +2,7 @@ package uk.co.mcksn.events.event.complex;
 
 import uk.co.mcksn.events.event.Event;
 
+@SuppressWarnings("rawtypes")
 public class ComplexEventBuilder {
 
 	public static AndComplexEvent and(Event... leaves) {

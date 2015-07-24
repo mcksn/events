@@ -4,6 +4,7 @@ import java.util.Collection;
 
 import uk.co.mcksn.events.event.Event;
 
+@SuppressWarnings("rawtypes")
 public interface UpdateEventsStackWork extends Work {
 
 	void doWork(Collection<Event> eventQueue);
