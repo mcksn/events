@@ -3,8 +3,8 @@ package uk.co.mcksn.events.event;
 import uk.co.mcksn.events.event.module.action.ActionModule;
 import uk.co.mcksn.events.event.module.result.ResultModule;
 import uk.co.mcksn.events.event.module.vpolicy.VerificationPolicyModule;
-import uk.co.mcksn.events.type.Nameable;
-import uk.co.mcksn.events.type.Verifyable;
+import uk.co.mcksn.events.event.type.Nameable;
+import uk.co.mcksn.events.event.type.Verifyable;
 
 /**
  * An Event is model of what the end user thinks will happen within the test

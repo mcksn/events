@@ -21,13 +21,13 @@ import uk.co.mcksn.events.enumeration.EventState;
 import uk.co.mcksn.events.enumeration.VerificationOutcome;
 import uk.co.mcksn.events.eventstream.AbstractEventHandler;
 import uk.co.mcksn.events.eventstream.EventStream;
-import uk.co.mcksn.events.incominghttp.wiremock.ServerReceivesRequestEvent;
-import uk.co.mcksn.events.incominghttp.wiremock.ServerReceivesRequestEventHandler;
-import uk.co.mcksn.events.incominghttp.wiremock.WireMockServerDef;
+import uk.co.mcksn.events.httpincoming.wiremock.HttpInEvent;
+import uk.co.mcksn.events.httpincoming.wiremock.HttpInEventHandler;
+import uk.co.mcksn.events.httpincoming.wiremock.WireMockServerDef;
 
-public class SRRWhenPlotBBTest extends AbstractWhenPlotBehavior {
+public class HttpInWhenPlotBBTest extends AbstractWhenPlotBehavior {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(SRRWhenPlotBBTest.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(HttpInWhenPlotBBTest.class);
 
 	private static final String COMPONENT_B_URL = "/compB";
 	private static final String COMPONENT_C_URL = "/compC";
@@ -36,7 +36,7 @@ public class SRRWhenPlotBBTest extends AbstractWhenPlotBehavior {
 
 	private static final UtilityProvider UTILITY_PROVIDER = new UtilityProvider();
 
-	private AbstractEventHandler srrEventHandler = null;
+	private AbstractEventHandler httpInEventHandler = null;
 
 	private WireMockServerDef wireMockServerDefB = WireMockServerDef.buildDefintion(
 			new WireMockServer(wireMockConfig().notifier(new WireMockNotifierImpl()).port(8051)), "Comp B");
@@ -44,10 +44,10 @@ public class SRRWhenPlotBBTest extends AbstractWhenPlotBehavior {
 	private WireMockServerDef wireMockServerDefC = WireMockServerDef.buildDefintion(
 			new WireMockServer(wireMockConfig().notifier(new WireMockNotifierImpl()).port(8052)), "Comp C");
 
-	private ServerReceivesRequestEvent defineBaseEventRequests(String requestBody, WireMockServerDef respondingServer,
+	private HttpInEvent defineBaseEventRequests(String requestBody, WireMockServerDef respondingServer,
 			final String url, AbstractWhenPlotBehaviorEnumeration behaviorEnum) {
 
-		ServerReceivesRequestEvent event = new ServerReceivesRequestEvent();
+		HttpInEvent event = new HttpInEvent();
 		event.getActionModule().givenRequest(get(urlEqualTo(url)).willReturn(aResponse().withBody("a response")));
 		event.getWaitModule().setTimeout(2000L);
 		event.setWireMockServerDef(respondingServer);
@@ -57,11 +57,9 @@ public class SRRWhenPlotBBTest extends AbstractWhenPlotBehavior {
 
 	}
 
-	private ServerReceivesRequestEvent defineRequestsToCompB(String requestBody,
-			AbstractWhenPlotBehaviorEnumeration behaviorEnum) {
+	private HttpInEvent defineRequestsToCompB(String requestBody, AbstractWhenPlotBehaviorEnumeration behaviorEnum) {
 
-		ServerReceivesRequestEvent event = defineBaseEventRequests(requestBody, wireMockServerDefB, COMPONENT_B_URL,
-				behaviorEnum);
+		HttpInEvent event = defineBaseEventRequests(requestBody, wireMockServerDefB, COMPONENT_B_URL, behaviorEnum);
 		event.setName("Component A makes a request to Component B");
 		event.setWireMockServerDef(wireMockServerDefB);
 		return event;
@@ -70,7 +68,7 @@ public class SRRWhenPlotBBTest extends AbstractWhenPlotBehavior {
 
 	@Before
 	public void before() {
-		srrEventHandler = ServerReceivesRequestEventHandler.looksLike(wireMockServerDefB, wireMockServerDefC);
+		httpInEventHandler = HttpInEventHandler.looksLike(wireMockServerDefB, wireMockServerDefC);
 	}
 
 	@After
@@ -91,17 +89,18 @@ public class SRRWhenPlotBBTest extends AbstractWhenPlotBehavior {
 	public void SHOULD_wait_for_event_to_occur_WHEN_when_event_GIVEN_event_can_be_waited_for() {
 
 		final AbstractWhenPlotBehaviorEnumeration behaviorEnum = SHOULD_wait_for_event_to_occur_WHEN_when_event_GIVEN_event_can_be_waited_for;
-		ServerReceivesRequestEvent reqToCompBWithResponse1 = defineRequestsToCompB("Response 1", behaviorEnum);
-		
-		EventStream eventStream = EventStream.given(srrEventHandler);
-		
+		HttpInEvent reqToCompBWithResponse1 = defineRequestsToCompB("Response 1", behaviorEnum);
+
+		EventStream eventStream = EventStream.given(httpInEventHandler);
+
 		// invoke test
 		UTILITY_PROVIDER.getNewHttpClientInstance(STUB_URL).sendGet(behaviorEnum.name());
-		
+
 		eventStream.when(reqToCompBWithResponse1);
-		
+
 		Assert.assertEquals(EventState.OCCURRED, reqToCompBWithResponse1.getOccurredModule().getState());
-		Assert.assertEquals(VerificationOutcome.SUCCESS, reqToCompBWithResponse1.getOccurredModule().getVerificationOutcome()); 
+		Assert.assertEquals(VerificationOutcome.SUCCESS,
+				reqToCompBWithResponse1.getOccurredModule().getVerificationOutcome());
 	}
 
 	/*
@@ -109,11 +108,11 @@ public class SRRWhenPlotBBTest extends AbstractWhenPlotBehavior {
 	 * SHOULD_wait_for_multiple_events_to_occur_WHEN_when_events_verify_all_events_GIVEN_events_consist_of_multiple_and
 	 * () {
 	 * 
-	 * ServerReceivesRequestEvent reqToCompBWithResponse1 =
-	 * defineRequestsToCompB("Response 1"); ServerReceivesRequestEvent
+	 * AbstractEvent reqToCompBWithResponse1 =
+	 * defineRequestsToCompB("Response 1"); AbstractEvent
 	 * reqToCompBWithResponse2 = defineRequestsToCompB("Response 2");
 	 * 
-	 * //@formatter:off EventStream story = EventStream.given(srrEventHandler)
+	 * //@formatter:off EventStream story = EventStream.given(httpInEventHandler)
 	 * .when(and(reqToCompBWithResponse1,reqToCompBWithResponse2))
 	 * .occurs_then_verify(reqToCompBWithResponse1) .and_the_story_continues();
 	 * 
@@ -123,13 +122,13 @@ public class SRRWhenPlotBBTest extends AbstractWhenPlotBehavior {
 	 * 
 	 * @Override public void
 	 * SHOULD_wait_for_multiple_events_to_occur_WHEN_when_events_verify_all_events_GIVEN_events_consist_of_multiple_or
-	 * () { ServerReceivesRequestEvent reqToCompBWithResponse1 =
-	 * defineRequestsToCompB("Response 1"); ServerReceivesRequestEvent
+	 * () { AbstractEvent reqToCompBWithResponse1 =
+	 * defineRequestsToCompB("Response 1"); AbstractEvent
 	 * reqToCompBWithResponse2 = defineRequestsToCompB("Response 2");
 	 * ComplexEvent complexEvent = or(reqToCompBWithResponse1,
 	 * reqToCompBWithResponse2).getComplexEvent();
 	 * 
-	 * //@formatter:off EventStream story = EventStream.given(srrEventHandler)
+	 * //@formatter:off EventStream story = EventStream.given(httpInEventHandler)
 	 * .when(complexEvent) .occurs_then_verify(complexEvent)
 	 * .and_the_story_continues();
 	 * 
@@ -141,17 +140,17 @@ public class SRRWhenPlotBBTest extends AbstractWhenPlotBehavior {
 	 * SHOULD_wait_for_multiple_events_to_occur_WHEN_when_events_verify_all_events_GIVEN_events_consist_of_multiple_and_with_or
 	 * () {
 	 * 
-	 * ServerReceivesRequestEvent reqToCompBWithResponse1 =
-	 * defineRequestsToCompB("Response 1"); ServerReceivesRequestEvent
+	 * AbstractEvent reqToCompBWithResponse1 =
+	 * defineRequestsToCompB("Response 1"); AbstractEvent
 	 * reqToCompBWithResponse2 = defineRequestsToCompB("Response 2");
-	 * ServerReceivesRequestEvent reqToCompBWithResponse3 =
+	 * AbstractEvent reqToCompBWithResponse3 =
 	 * defineRequestsToCompB("Response 3");
 	 * 
 	 * ComplexEvent complexEvent = or(reqToCompBWithResponse1,
 	 * and(reqToCompBWithResponse2, reqToCompBWithResponse3))
 	 * .getComplexEvent();
 	 * 
-	 * //@formatter:off EventStream story = EventStream.given(srrEventHandler)
+	 * //@formatter:off EventStream story = EventStream.given(httpInEventHandler)
 	 * .when(complexEvent) .occurs_then_verify(complexEvent)
 	 * .and_the_story_continues();
 	 * 

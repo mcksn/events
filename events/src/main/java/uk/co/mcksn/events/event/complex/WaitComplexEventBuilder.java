@@ -1,22 +1,15 @@
 package uk.co.mcksn.events.event.complex;
 
-import java.util.Arrays;
-
-import uk.co.mcksn.events.event.Event;
-import uk.co.mcksn.events.type.Waitable;
+import uk.co.mcksn.events.event.type.Waitable;
 
 @SuppressWarnings("rawtypes")
 public class WaitComplexEventBuilder {
 	
-	@SafeVarargs
-	public static <WaitableEvent extends Event & Waitable> AndComplexEvent and(WaitableEvent... children) {
-		//TODO Check each object to verify safe varargs
+	public static AndComplexEvent and(Waitable... children) {
 		return new AndComplexEvent(children);
 	}
 
-	@SafeVarargs
-	public static <WaitableEvent extends Event & Waitable> OrComplexEvent or(WaitableEvent... children) {
-		//TODO Check each object to verify safe varargs
+	public static OrComplexEvent or(Waitable... children) {
 		return new OrComplexEvent(children);
 	}
 

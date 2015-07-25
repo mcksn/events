@@ -1,4 +1,4 @@
-package uk.co.mcksn.events.incominghttp.wiremock;
+package uk.co.mcksn.events.httpincoming.wiremock;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,16 +13,16 @@ import uk.co.mcksn.events.eventhandler.strategy.RegisterForWaitStrategy;
 import uk.co.mcksn.events.eventhandler.strategy.VerificationStrategy;
 import uk.co.mcksn.events.eventstream.AbstractEventHandler;
 import uk.co.mcksn.events.eventstream.WaitHandlerable;
-import uk.co.mcksn.events.stack.SRREventUpdateEventsStackWorkImpl;
+import uk.co.mcksn.events.stack.HttpInEventUpdateStackWorkImpl;
 
 @SuppressWarnings("rawtypes")
-public class ServerReceivesRequestEventHandler extends AbstractEventHandler implements WaitHandlerable {
+public class HttpInEventHandler extends AbstractEventHandler implements WaitHandlerable {
 
 	private List<WireMockServerDef> registeredWireMockServerDefs = new ArrayList<WireMockServerDef>();
 
 	public static AbstractEventHandler looksLike(WireMockServerDef... wireMockServerDefs) {
 
-		ServerReceivesRequestEventHandler eventHandler = new ServerReceivesRequestEventHandler();
+		HttpInEventHandler eventHandler = new HttpInEventHandler();
 		eventHandler.registeredWireMockServerDefs.addAll(Arrays.asList(wireMockServerDefs));
 		eventHandler.configureEachWireMockServer();
 
@@ -38,7 +38,7 @@ public class ServerReceivesRequestEventHandler extends AbstractEventHandler impl
 
 				public void requestReceived(Request request, Response response) {
 
-					SRREventUpdateEventsStackWorkImpl updateEventWork = new SRREventUpdateEventsStackWorkImpl(wireMockServerDef, request);
+					HttpInEventUpdateStackWorkImpl updateEventWork = new HttpInEventUpdateStackWorkImpl(wireMockServerDef, request);
 					getEventQueueWorker().doWork(updateEventWork);
 
 				}
@@ -49,16 +49,16 @@ public class ServerReceivesRequestEventHandler extends AbstractEventHandler impl
 
 	@Override
 	public VerificationStrategy getVerificationStrategy() {
-		return new SRRVerificationStrategy();
+		return new HttpInVerificationStrategy();
 	}
 
 	@Override
 	public RegisterForWaitStrategy getRegisterForWaitStrategy() {
-		return new SRRRegisterForWaitStrategy();
+		return new HttpInRegisterForWaitStrategy();
 	}
 
 	@Override
 	public Class<? extends Event> getEventType() {
-		return ServerReceivesRequestEvent.class;
+		return HttpInEvent.class;
 	}
 }

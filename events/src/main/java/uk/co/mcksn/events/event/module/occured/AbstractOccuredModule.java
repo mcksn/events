@@ -5,23 +5,20 @@ import org.slf4j.LoggerFactory;
 
 import uk.co.mcksn.events.enumeration.EventState;
 import uk.co.mcksn.events.enumeration.VerificationOutcome;
-import uk.co.mcksn.events.event.Event;
 import uk.co.mcksn.events.eventhandler.strategy.VerificationStrategyFactory;
-import uk.co.mcksn.events.type.Verifyable;
 
-@SuppressWarnings("rawtypes")
-public abstract class AbstractOccuredModule<VerifybleEvent extends Event & Verifyable> {
+public abstract class AbstractOccuredModule<Verifyable> {
 
 	private final static Logger LOGGER = LoggerFactory.getLogger(AbstractOccuredModule.class);
 	
-	protected VerifybleEvent verifyPlotable = null;
+	protected Verifyable verifyable = null;
 	protected EventState state = EventState.IN_PROGRESS;
 	protected VerificationOutcome verificationOutcome = VerificationOutcome.UNKOWN;
 	protected VerificationStrategyFactory verificationStrategyFactory = null;
 
-	public AbstractOccuredModule(VerifybleEvent verifyPlotable) {
+	public AbstractOccuredModule(Verifyable verifyable) {
 		super();
-		this.verifyPlotable = verifyPlotable;
+		this.verifyable = verifyable;
 	}
 
 	public void setState(EventState state) {

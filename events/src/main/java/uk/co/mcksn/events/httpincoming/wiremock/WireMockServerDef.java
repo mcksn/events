@@ -1,4 +1,4 @@
-package uk.co.mcksn.events.incominghttp.wiremock;
+package uk.co.mcksn.events.httpincoming.wiremock;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 

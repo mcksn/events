@@ -1,18 +1,17 @@
 package uk.co.mcksn.events.event.module.wait;
 
-import uk.co.mcksn.events.event.Event;
+import uk.co.mcksn.events.event.type.Waitable;
 import uk.co.mcksn.events.eventhandler.strategy.RegisterForWaitStrategyFactory;
-import uk.co.mcksn.events.type.Waitable;
 
 @SuppressWarnings("rawtypes")
-public class WaitModule<WaitableEvent extends Event & Waitable> extends AbstractWaitModule<WaitableEvent> {
+public class WaitModule extends AbstractWaitModule<Waitable> {
 
-	public WaitModule(WaitableEvent waitable) {
+	public WaitModule(Waitable waitable) {
 		super(waitable);
 	}
 
 	public void registerForWait(RegisterForWaitStrategyFactory strategyFactory) {
-		strategyFactory.createRegisterForWaitStrategy(waitPlotable).registerForWait(waitPlotable);
+		strategyFactory.createRegisterForWaitStrategy(waitable).registerForWait(waitable);
 	}
 	
 }

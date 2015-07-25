@@ -3,18 +3,16 @@ package uk.co.mcksn.events.event.module.wait;
 import uk.co.mcksn.events.event.Event;
 import uk.co.mcksn.events.eventhandler.strategy.RegisterForWaitStrategyFactory;
 import uk.co.mcksn.events.eventstream.EventStream;
-import uk.co.mcksn.events.type.Waitable;
 
-@SuppressWarnings("rawtypes")
-public abstract class AbstractWaitModule<WaitableEvent extends Event & Waitable> {
+public abstract class AbstractWaitModule<Waitable> {
 
-	protected WaitableEvent waitPlotable;
+	protected Waitable waitable;
 
 	private Long timeout = 20000L;
 
-	public AbstractWaitModule(WaitableEvent event) {
+	public AbstractWaitModule(Waitable event) {
 		super();
-		this.waitPlotable = event;
+		this.waitable = event;
 	}
 
 	/**
@@ -37,8 +35,8 @@ public abstract class AbstractWaitModule<WaitableEvent extends Event & Waitable>
 	 * </pre>
 	 */
 	public void doNotify() {
-		synchronized (waitPlotable) {
-			waitPlotable.notify();
+		synchronized (waitable) {
+			waitable.notify();
 
 		}
 
@@ -64,9 +62,9 @@ public abstract class AbstractWaitModule<WaitableEvent extends Event & Waitable>
 	 * </pre>
 	 */
 	public void doWait() {
-		synchronized (waitPlotable) {
+		synchronized (waitable) {
 			try {
-				waitPlotable.wait(timeout);
+				waitable.wait(timeout);
 			} catch (InterruptedException e) {
 				System.err.println(e);
 				// TODO Log. Research how useful notifier pattern is. Would make

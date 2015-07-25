@@ -1,4 +1,4 @@
-package uk.co.mcksn.events.type;
+package uk.co.mcksn.events.event.type;
 
 public interface Nameable {
 

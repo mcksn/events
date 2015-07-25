@@ -3,9 +3,9 @@ package uk.co.mcksn.events.eventhandler.strategy;
 import java.util.List;
 
 import uk.co.mcksn.events.event.Event;
+import uk.co.mcksn.events.event.type.Waitable;
 import uk.co.mcksn.events.eventstream.AbstractEventHandler;
 import uk.co.mcksn.events.eventstream.WaitHandlerable;
-import uk.co.mcksn.events.type.Waitable;
 
 @SuppressWarnings("rawtypes")
 public class RegisterForWaitStrategyFactory extends AbstractStrategyFactory {

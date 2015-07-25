@@ -1,24 +1,25 @@
 package uk.co.mcksn.events.tree;
 
+@SuppressWarnings("rawtypes")
 public class RecursiveTreeTraverserImpl implements TreeTraverser {
 
+	@SuppressWarnings("unchecked")
+	public <T extends Treeable> T getRootEventTreeable(Class<T> returnType, Treeable eventTreeable) {
 
-	public <T extends Treeable> T  getRootEventTreeable(T eventTreeable) {
-
-		return internalFindRootTreeOfGivenTree(eventTreeable);
+		return (T) internalFindRootTreeOfGivenTree(eventTreeable);
 	}
 
-	private <T extends Treeable> T internalFindRootTreeOfGivenTree(T eventTreeable) {
+	private Treeable internalFindRootTreeOfGivenTree(Treeable treeable) {
 
-		Treeable rtnEvent = eventTreeable.getTreeModule().getParent();
-
+		Treeable rtnEvent = (Treeable) treeable.getTreeModule().getParent();
+		
 		if (rtnEvent == null) {
-			return eventTreeable;
+			return treeable;
 		} else {
-			internalFindRootTreeOfGivenTree(eventTreeable);
+			internalFindRootTreeOfGivenTree(treeable);
 		}
 
-		return eventTreeable;
+		return treeable;
 
 	}
 

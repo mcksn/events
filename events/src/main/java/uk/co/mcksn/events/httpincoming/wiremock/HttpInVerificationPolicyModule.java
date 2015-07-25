@@ -1,4 +1,4 @@
-package uk.co.mcksn.events.event.module.vpolicy;
+package uk.co.mcksn.events.httpincoming.wiremock;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
@@ -6,7 +6,9 @@ import org.apache.commons.lang.builder.ToStringStyle;
 import com.github.tomakehurst.wiremock.client.RequestPatternBuilder;
 import com.github.tomakehurst.wiremock.matching.RequestPattern;
 
-public class ServerReceivesRequestVerificationPolicyModule implements VerificationPolicyModule {
+import uk.co.mcksn.events.event.module.vpolicy.VerificationPolicyModule;
+
+public class HttpInVerificationPolicyModule implements VerificationPolicyModule {
 
 	private RequestPattern requestPattern;
 

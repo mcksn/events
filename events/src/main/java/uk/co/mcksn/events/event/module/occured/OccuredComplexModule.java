@@ -6,9 +6,9 @@ import java.util.Collection;
 import uk.co.mcksn.events.enumeration.EventState;
 import uk.co.mcksn.events.enumeration.VerificationOutcome;
 import uk.co.mcksn.events.event.complex.ComplexEvent;
+import uk.co.mcksn.events.event.type.Verifyable;
 import uk.co.mcksn.events.eventhandler.strategy.AbstractStrategyFactory;
 import uk.co.mcksn.events.eventhandler.strategy.VerificationStrategyFactory;
-import uk.co.mcksn.events.type.Verifyable;
 
 @SuppressWarnings("rawtypes")
 public abstract class OccuredComplexModule extends AbstractOccuredModule<ComplexEvent> {
@@ -31,7 +31,7 @@ public abstract class OccuredComplexModule extends AbstractOccuredModule<Complex
 	 */
 	protected EventState calculateState() {
 		Collection<EventState> eventStatesFromLeaves = new ArrayList<EventState>();
-		for (Verifyable aVerifyable : this.verifyPlotable.getChildren()) {
+		for (Verifyable aVerifyable : this.verifyable.getChildren()) {
 			eventStatesFromLeaves.add(aVerifyable.getOccurredModule().getState());
 		}
 		return internalCalculateState(eventStatesFromLeaves);
@@ -48,9 +48,9 @@ public abstract class OccuredComplexModule extends AbstractOccuredModule<Complex
 			AbstractStrategyFactory verificationAbstractStrategyFactory) {
 
 		Collection<VerificationOutcome> verificationOutcomesFromLeaves = new ArrayList<VerificationOutcome>(
-				this.verifyPlotable.getChildren().size());
+				this.verifyable.getChildren().size());
 
-		for (Verifyable aVerifyable : this.verifyPlotable.getChildren()) {
+		for (Verifyable aVerifyable : this.verifyable.getChildren()) {
 
 			verificationOutcomesFromLeaves.add(aVerifyable.getOccurredModule().getVerificationOutcome());
 		}
@@ -70,7 +70,7 @@ public abstract class OccuredComplexModule extends AbstractOccuredModule<Complex
 
 		this.verificationStrategyFactory = verificationStrategyFactory;
 
-		for (Verifyable aVerifyable : this.verifyPlotable.getChildren()) {
+		for (Verifyable aVerifyable : this.verifyable.getChildren()) {
 			aVerifyable.getOccurredModule().setVerificationStrategyFactory(this.verificationStrategyFactory);
 		}
 	}

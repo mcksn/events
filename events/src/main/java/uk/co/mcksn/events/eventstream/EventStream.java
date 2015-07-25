@@ -9,13 +9,14 @@ import org.slf4j.LoggerFactory;
 
 import uk.co.mcksn.events.enumeration.RegisterWithStreamType;
 import uk.co.mcksn.events.event.Event;
+import uk.co.mcksn.events.event.type.Expectable;
+import uk.co.mcksn.events.event.type.Simulateable;
+import uk.co.mcksn.events.event.type.Waitable;
+import uk.co.mcksn.events.event.type.Whenable;
 import uk.co.mcksn.events.eventhandler.strategy.RegisterForWaitStrategyFactory;
 import uk.co.mcksn.events.eventhandler.strategy.VerificationStrategyFactory;
 import uk.co.mcksn.events.eventhandler.util.EventHandlerResolver;
 import uk.co.mcksn.events.stack.ThreadSafeEventStackWorker;
-import uk.co.mcksn.events.type.Expectable;
-import uk.co.mcksn.events.type.Simulateable;
-import uk.co.mcksn.events.type.Whenable;
 
 /**
  * A story is a sequence of {@link Event}s that will perform a testable
@@ -24,7 +25,7 @@ import uk.co.mcksn.events.type.Whenable;
  * @author mackson
  *
  */
-@SuppressWarnings("rawtypes")
+@SuppressWarnings({ "unchecked", "rawtypes" })
 public class EventStream {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(EventStream.class);
@@ -57,60 +58,49 @@ public class EventStream {
 	private RegisterForWaitStrategyFactory registerForWaitStrategyFactory = new RegisterForWaitStrategyFactory(
 			availableEventHandlers);
 
-	public <SimulateableEvent extends Event & Simulateable> ThenStream simulate(SimulateableEvent simulateableEvent) {
+	public ThenStream simulate(Simulateable simulateable) {
 
-		logRegisterWithStream(RegisterWithStreamType.SIMULATE, simulateableEvent);
+		logRegisterWithStream(RegisterWithStreamType.SIMULATE, simulateable);
 
-		simulateableEvent.getOccurredModule().setVerificationStrategyFactory(verificationStrategyFactory);
-		eventStackWorker.add(simulateableEvent);
+		simulateable.getOccurredModule().setVerificationStrategyFactory(verificationStrategyFactory);
+		eventStackWorker.add(simulateable);
 
-		EventHandlerResolver.findApplicableHandler(SimulateHandlerable.class, simulateableEvent,
-				availableEventHandlers);
+		EventHandlerResolver.findApplicableHandler(SimulateHandlerable.class, simulateable, availableEventHandlers);
 
 		return new ThenStream(this);
 
 	}
 
-	public <WhenableEvent extends Event & Whenable> OccursThenStream when(WhenableEvent whenableEvent) {
+	public OccursThenStream when(Whenable whenable) {
 
-		// need to verify that is complex, all childrens (recursive) are
-		// wheanable
-		// may be done by whenModule
-		// or just make sure they are all of the type of whenable by passing in
-		// interface.class within a strategy
-		// i.e recursive#isOfWaitableType(Class<Whenable> i)
+		logRegisterWithStream(RegisterWithStreamType.WHEN, whenable);
 
-		logRegisterWithStream(RegisterWithStreamType.WHEN, whenableEvent);
+		internalWait(whenable);
 
-		whenableEvent.getTreeModule().setParentsOfAllChildren(null);
-
-		whenableEvent.getWaitModule().registerForWait(registerForWaitStrategyFactory);
-
-		whenableEvent.getOccurredModule().setVerificationStrategyFactory(verificationStrategyFactory);
-		eventStackWorker.add(whenableEvent);
-
-		whenableEvent.getWaitModule().doWait();
+		whenable.getWaitModule().doWait();
 
 		return new OccursThenStream(this);
 
 	}
 
-	public <ExpectableEvent extends Event & Expectable> ThenStream expect(ExpectableEvent expectableEvent) {
+	public ThenStream expect(Expectable expectable) {
 
-		// need to verify that is complex, all childrens (recursive) are
-		// expectable
-		// may be done by expectModule
+		logRegisterWithStream(RegisterWithStreamType.EXPECT, expectable);
 
-		logRegisterWithStream(RegisterWithStreamType.EXPECT, expectableEvent);
-
-		expectableEvent.getTreeModule().setParentsOfAllChildren(null);
-
-		expectableEvent.getWaitModule().registerForWait(registerForWaitStrategyFactory);
-
-		expectableEvent.getOccurredModule().setVerificationStrategyFactory(verificationStrategyFactory);
-		eventStackWorker.add(expectableEvent);
+		internalWait(expectable);
 
 		return new ThenStream(this);
+	}
+
+	public void internalWait(Waitable waitable) {
+
+		waitable.getTreeModule().setParentsOfAllChildren(null);
+
+		waitable.getWaitModule().registerForWait(registerForWaitStrategyFactory);
+
+		waitable.getOccurredModule().setVerificationStrategyFactory(verificationStrategyFactory);
+		eventStackWorker.add(waitable);
+
 	}
 
 	ThreadSafeEventStackWorker getEventQueueWorker() {

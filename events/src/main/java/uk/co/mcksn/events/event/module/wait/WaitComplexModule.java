@@ -2,8 +2,8 @@ package uk.co.mcksn.events.event.module.wait;
 
 import uk.co.mcksn.events.event.Event;
 import uk.co.mcksn.events.event.complex.ComplexEvent;
+import uk.co.mcksn.events.event.type.Waitable;
 import uk.co.mcksn.events.eventhandler.strategy.RegisterForWaitStrategyFactory;
-import uk.co.mcksn.events.type.Waitable;
 
 @SuppressWarnings("rawtypes")
 public class WaitComplexModule extends AbstractWaitModule<ComplexEvent> {
@@ -15,7 +15,7 @@ public class WaitComplexModule extends AbstractWaitModule<ComplexEvent> {
 
 	public void registerForWait(RegisterForWaitStrategyFactory strategyFactory) {
 
-		for (Event aEvent : waitPlotable.getChildren()) {
+		for (Event aEvent : waitable.getChildren()) {
 
 			((Waitable)aEvent).getWaitModule().registerForWait(strategyFactory);
 		}

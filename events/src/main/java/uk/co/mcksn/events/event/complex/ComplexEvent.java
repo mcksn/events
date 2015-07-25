@@ -13,16 +13,16 @@ import uk.co.mcksn.events.event.module.result.NoResultModule;
 import uk.co.mcksn.events.event.module.tree.TreeComplexModule;
 import uk.co.mcksn.events.event.module.vpolicy.NoVerificationPolicyModule;
 import uk.co.mcksn.events.event.module.wait.WaitComplexModule;
+import uk.co.mcksn.events.event.type.Waitable;
 import uk.co.mcksn.events.tree.Treeable;
-import uk.co.mcksn.events.type.Waitable;
 
 @SuppressWarnings("rawtypes")
 public abstract class ComplexEvent
-		implements Event<NoActionModule, NoResultModule, NoVerificationPolicyModule>, Waitable {
+		implements Waitable<NoActionModule, NoResultModule, NoVerificationPolicyModule> {
 
 	private String name = "Not defined";
 
-	private Collection children = new ArrayList<Event>();
+	private Collection<Treeable> children = new ArrayList<Treeable>();
 
 	protected NoVerificationPolicyModule verificationPolicyModule = new NoVerificationPolicyModule();
 	protected NoResultModule resultModule = new NoResultModule();
@@ -68,7 +68,6 @@ public abstract class ComplexEvent
 		return eventOccuredModule;
 	}
 
-	@SuppressWarnings("unchecked")
 	public TreeComplexModule getTreeModule() {
 		return treeEventModule;
 	}
@@ -82,11 +81,11 @@ public abstract class ComplexEvent
 
 	}
 
-	public <T extends Event & Treeable> Collection<T> getChildren() {
-		return (Collection<T>) children;
+	public  Collection<Treeable> getChildren() {
+		return children;
 	}
 
-	public <T extends Event & Treeable> void addChildren(Collection<T> children) {
+	public <T extends Event & Treeable> void addChildren(Collection<Treeable> children) {
 		this.children.addAll(children);
 	}
 

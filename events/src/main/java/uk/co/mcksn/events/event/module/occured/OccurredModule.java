@@ -3,13 +3,13 @@ package uk.co.mcksn.events.event.module.occured;
 import uk.co.mcksn.events.enumeration.EventState;
 import uk.co.mcksn.events.enumeration.VerificationOutcome;
 import uk.co.mcksn.events.event.Event;
+import uk.co.mcksn.events.event.type.Verifyable;
 import uk.co.mcksn.events.eventhandler.strategy.VerificationStrategyFactory;
-import uk.co.mcksn.events.type.Verifyable;
 
 @SuppressWarnings("rawtypes")
-public class OccurredModule<VerifybleEvent extends Event & Verifyable> extends AbstractOccuredModule<VerifybleEvent> {
+public class OccurredModule extends AbstractOccuredModule<Verifyable> {
 
-	public OccurredModule(VerifybleEvent verifyable) {
+	public OccurredModule(Verifyable verifyable) {
 		super(verifyable);
 	}
 
@@ -18,8 +18,8 @@ public class OccurredModule<VerifybleEvent extends Event & Verifyable> extends A
 	}
 
 	protected VerificationOutcome internalGetVerificationOutcome() {
-		return this.verificationStrategyFactory.createVerificationStrategy(verifyPlotable)
-				.calculateVerificationOutcome(this.verifyPlotable);
+		return this.verificationStrategyFactory.createVerificationStrategy(verifyable)
+				.calculateVerificationOutcome(this.verifyable);
 	}
 
 	public void setVerificationStrategyFactory(VerificationStrategyFactory verificationStrategyFactory) {

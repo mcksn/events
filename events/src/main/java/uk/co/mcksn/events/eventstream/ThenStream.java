@@ -1,9 +1,9 @@
 package uk.co.mcksn.events.eventstream;
 
 import uk.co.mcksn.events.event.Event;
-import uk.co.mcksn.events.type.Expectable;
-import uk.co.mcksn.events.type.Simulateable;
-import uk.co.mcksn.events.type.Whenable;
+import uk.co.mcksn.events.event.type.Expectable;
+import uk.co.mcksn.events.event.type.Simulateable;
+import uk.co.mcksn.events.event.type.Whenable;
 
 @SuppressWarnings("rawtypes")
 public class ThenStream extends StreamDecorator {

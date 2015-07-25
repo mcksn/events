@@ -1,4 +1,4 @@
-package uk.co.mcksn.events.type;
+package uk.co.mcksn.events.event.type;
 
 import uk.co.mcksn.events.event.module.occured.AbstractOccuredModule;
 import uk.co.mcksn.events.event.module.vpolicy.VerificationPolicyModule;

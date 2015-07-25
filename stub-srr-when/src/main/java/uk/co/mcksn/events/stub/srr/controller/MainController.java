@@ -1,6 +1,6 @@
 package uk.co.mcksn.events.stub.srr.controller;
 
-import static java.lang.Enum.*;
+import static java.lang.Enum.valueOf;
 
 import java.util.logging.Logger;
 

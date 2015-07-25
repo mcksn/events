@@ -1,4 +1,4 @@
-package uk.co.mcksn.events.incominghttp.wiremock;
+package uk.co.mcksn.events.httpincoming.wiremock;
 
 import static com.google.common.collect.Iterables.find;
 
@@ -13,28 +13,28 @@ import uk.co.mcksn.events.event.Event;
 
 public class WireMockUtil {
 
-	public static ServerReceivesRequestEvent findMatchingEvent(Collection<Event> events,
+	public static HttpInEvent findMatchingEvent(Collection<Event> events,
 			WireMockServerDef wireMockServerDef, Request request) {
 
 		Event matchingEvent = find(events, mappingMatchingAndInCorrectScenarioState(request), null);
 
-		if (!((ServerReceivesRequestEvent) matchingEvent).getWireMockServerDef().equals(wireMockServerDef)) {
+		if (!((HttpInEvent) matchingEvent).getWireMockServerDef().equals(wireMockServerDef)) {
 			matchingEvent = null;
 		}
 
-		return (ServerReceivesRequestEvent) matchingEvent;
+		return (HttpInEvent) matchingEvent;
 
 	}
 
 	private static Predicate<Event> mappingMatchingAndInCorrectScenarioState(final Request request) {
 		return new Predicate<Event>() {
 			public boolean apply(Event event) {
-				if (event instanceof ServerReceivesRequestEvent) {
-					ServerReceivesRequestEvent srrEvent = (ServerReceivesRequestEvent) event;
-					StubMapping srrEventStubMapping = srrEvent.getActionModule().getStubMapping();
-					return srrEventStubMapping.getRequest().isMatchedBy(request)
-							&& (srrEventStubMapping.isIndependentOfScenarioState()
-									|| srrEventStubMapping.requiresCurrentScenarioState())
+				if (event instanceof HttpInEvent) {
+					HttpInEvent httpInEvent = (HttpInEvent) event;
+					StubMapping httpInEventStubMapping = httpInEvent.getActionModule().getStubMapping();
+					return httpInEventStubMapping.getRequest().isMatchedBy(request)
+							&& (httpInEventStubMapping.isIndependentOfScenarioState()
+									|| httpInEventStubMapping.requiresCurrentScenarioState())
 							&& !event.getOccurredModule().getState().equals(EventState.OCCURRED);
 				} else
 					return false;

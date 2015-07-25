@@ -10,6 +10,7 @@ public class TreeComplexModule extends AbstractTreeModule<ComplexEvent> {
 		super(complexEvent);
 	}
 
+	@SuppressWarnings("unchecked")
 	public void setParentsOfAllChildren(ComplexEvent rootParent) {
 
 		for (Treeable aTreeable : eventTreeable.getChildren()) {
