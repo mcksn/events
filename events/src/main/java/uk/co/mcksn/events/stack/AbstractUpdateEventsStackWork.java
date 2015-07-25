@@ -29,14 +29,14 @@ public abstract class AbstractUpdateEventsStackWork<E extends Event> implements 
 			System.err.println("Event ocurred but not on the Stream.");
 			return;
 		}
-		matchEvent.getEventOccurredModule().setState(EventState.OCCURRED);
+		matchEvent.getOccurredModule().setState(EventState.OCCURRED);
 		LOGGER.info("Eyewitnesses say the following event occured: " + matchEvent.getName());
 		
 		updateResultModule(matchEvent);
 
 		if (matchEvent instanceof Waitable) {
 			Waitable rootMatchedEvent = treeTraverser.getRootEventTreeable((Waitable) matchEvent);
-			EventState rootMatchedEventState = ((Event) rootMatchedEvent).getEventOccurredModule().getState();
+			EventState rootMatchedEventState = ((Event) rootMatchedEvent).getOccurredModule().getState();
 			if (rootMatchedEventState.equals(EventState.OCCURRED)) {
 				doNotifyOnEvent(rootMatchedEvent);
 			}

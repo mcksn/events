@@ -6,14 +6,14 @@ import java.util.Collection;
 import uk.co.mcksn.events.enumeration.EventState;
 import uk.co.mcksn.events.enumeration.VerificationOutcome;
 import uk.co.mcksn.events.event.complex.ComplexEvent;
-import uk.co.mcksn.events.event.complex.ComplexEvent;
 import uk.co.mcksn.events.eventhandler.strategy.AbstractStrategyFactory;
 import uk.co.mcksn.events.eventhandler.strategy.VerificationStrategyFactory;
 import uk.co.mcksn.events.type.Verifyable;
 
-public abstract class ComplexOccuredModule extends AbstractOccuredModule<ComplexEvent> {
+@SuppressWarnings("rawtypes")
+public abstract class OccuredComplexModule extends AbstractOccuredModule<ComplexEvent> {
 
-	public ComplexOccuredModule(ComplexEvent event) {
+	public OccuredComplexModule(ComplexEvent event) {
 		super(event);
 	}
 
@@ -32,7 +32,7 @@ public abstract class ComplexOccuredModule extends AbstractOccuredModule<Complex
 	protected EventState calculateState() {
 		Collection<EventState> eventStatesFromLeaves = new ArrayList<EventState>();
 		for (Verifyable aVerifyable : this.verifyPlotable.getChildren()) {
-			eventStatesFromLeaves.add(aVerifyable.getEventOccurredModule().getState());
+			eventStatesFromLeaves.add(aVerifyable.getOccurredModule().getState());
 		}
 		return internalCalculateState(eventStatesFromLeaves);
 	}
@@ -44,15 +44,15 @@ public abstract class ComplexOccuredModule extends AbstractOccuredModule<Complex
 	 * @param verificationAbstractStrategyFactory
 	 * @return
 	 */
-	private VerificationOutcome calculateVerificationOutcome(AbstractStrategyFactory verificationAbstractStrategyFactory) {
+	private VerificationOutcome calculateVerificationOutcome(
+			AbstractStrategyFactory verificationAbstractStrategyFactory) {
 
 		Collection<VerificationOutcome> verificationOutcomesFromLeaves = new ArrayList<VerificationOutcome>(
 				this.verifyPlotable.getChildren().size());
 
 		for (Verifyable aVerifyable : this.verifyPlotable.getChildren()) {
 
-			verificationOutcomesFromLeaves
-					.add(aVerifyable.getEventOccurredModule().getVerificationOutcome());
+			verificationOutcomesFromLeaves.add(aVerifyable.getOccurredModule().getVerificationOutcome());
 		}
 		return VerificationOutcome.getOverallVerificationOutcome(verificationOutcomesFromLeaves);
 
@@ -67,11 +67,11 @@ public abstract class ComplexOccuredModule extends AbstractOccuredModule<Complex
 	}
 
 	public void setVerificationStrategyFactory(VerificationStrategyFactory verificationStrategyFactory) {
-		
+
 		this.verificationStrategyFactory = verificationStrategyFactory;
-		
+
 		for (Verifyable aVerifyable : this.verifyPlotable.getChildren()) {
-			aVerifyable.getEventOccurredModule().setVerificationStrategyFactory(this.verificationStrategyFactory);
+			aVerifyable.getOccurredModule().setVerificationStrategyFactory(this.verificationStrategyFactory);
 		}
 	}
 

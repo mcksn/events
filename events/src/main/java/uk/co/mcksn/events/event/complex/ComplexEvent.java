@@ -8,15 +8,13 @@ import org.apache.commons.lang.builder.ToStringStyle;
 
 import uk.co.mcksn.events.event.Event;
 import uk.co.mcksn.events.event.module.action.NoActionModule;
-import uk.co.mcksn.events.event.module.occured.AbstractOccuredModule;
+import uk.co.mcksn.events.event.module.occured.OccuredComplexModule;
 import uk.co.mcksn.events.event.module.result.NoResultModule;
-import uk.co.mcksn.events.event.module.tree.AbstractTreeModule;
 import uk.co.mcksn.events.event.module.tree.TreeComplexModule;
 import uk.co.mcksn.events.event.module.vpolicy.NoVerificationPolicyModule;
-import uk.co.mcksn.events.event.module.wait.AbstractWaitModule;
 import uk.co.mcksn.events.event.module.wait.WaitComplexModule;
+import uk.co.mcksn.events.tree.Treeable;
 import uk.co.mcksn.events.type.Waitable;
-
 
 @SuppressWarnings("rawtypes")
 public abstract class ComplexEvent
@@ -24,15 +22,15 @@ public abstract class ComplexEvent
 
 	private String name = "Not defined";
 
-	protected Collection<Event> children = new ArrayList<Event>();
+	private Collection children = new ArrayList<Event>();
 
 	protected NoVerificationPolicyModule verificationPolicyModule = new NoVerificationPolicyModule();
 	protected NoResultModule resultModule = new NoResultModule();
 	protected NoActionModule actionModule = new NoActionModule();
 
-	protected AbstractWaitModule<ComplexEvent> waitModule = new WaitComplexModule(this);
-	protected AbstractOccuredModule<ComplexEvent> eventOccuredModule = null;
-	protected AbstractTreeModule<ComplexEvent> treeEventModule = new TreeComplexModule(this);
+	protected WaitComplexModule waitModule = new WaitComplexModule(this);
+	protected OccuredComplexModule eventOccuredModule = null;
+	protected TreeComplexModule treeEventModule = new TreeComplexModule(this);
 
 	protected ComplexEvent() {
 		super();
@@ -62,37 +60,34 @@ public abstract class ComplexEvent
 		this.resultModule = resultModule;
 	}
 
-	@Override
-	public AbstractWaitModule getWaitModule() {
+	public WaitComplexModule getWaitModule() {
 		return waitModule;
 	}
 
-	@Override
-	public AbstractOccuredModule getEventOccurredModule() {
+	public OccuredComplexModule getOccurredModule() {
 		return eventOccuredModule;
 	}
 
-	public AbstractTreeModule getTreeModule() {
+	@SuppressWarnings("unchecked")
+	public TreeComplexModule getTreeModule() {
 		return treeEventModule;
 	}
 
-	@Override
 	public NoVerificationPolicyModule getVerificationPolicyModule() {
 		return verificationPolicyModule;
 	}
 
-	@Override
 	public void setVerificationPolicyModule(NoVerificationPolicyModule verificationPolicyModule) {
 		this.verificationPolicyModule = verificationPolicyModule;
 
 	}
 
-	public Collection<Event> getChildren() {
-		return children;
+	public <T extends Event & Treeable> Collection<T> getChildren() {
+		return (Collection<T>) children;
 	}
 
-	public void setChildren(Collection<Event> children) {
-		this.children = children;
+	public <T extends Event & Treeable> void addChildren(Collection<T> children) {
+		this.children.addAll(children);
 	}
 
 	@Override

@@ -15,6 +15,7 @@ import uk.co.mcksn.events.eventstream.AbstractEventHandler;
 import uk.co.mcksn.events.eventstream.WaitHandlerable;
 import uk.co.mcksn.events.stack.SRREventUpdateEventsStackWorkImpl;
 
+@SuppressWarnings("rawtypes")
 public class ServerReceivesRequestEventHandler extends AbstractEventHandler implements WaitHandlerable {
 
 	private List<WireMockServerDef> registeredWireMockServerDefs = new ArrayList<WireMockServerDef>();

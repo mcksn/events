@@ -35,7 +35,7 @@ public class WireMockUtil {
 					return srrEventStubMapping.getRequest().isMatchedBy(request)
 							&& (srrEventStubMapping.isIndependentOfScenarioState()
 									|| srrEventStubMapping.requiresCurrentScenarioState())
-							&& !event.getEventOccurredModule().getState().equals(EventState.OCCURRED);
+							&& !event.getOccurredModule().getState().equals(EventState.OCCURRED);
 				} else
 					return false;
 			}

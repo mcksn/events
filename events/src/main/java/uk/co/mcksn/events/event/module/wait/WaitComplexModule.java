@@ -5,6 +5,7 @@ import uk.co.mcksn.events.event.complex.ComplexEvent;
 import uk.co.mcksn.events.eventhandler.strategy.RegisterForWaitStrategyFactory;
 import uk.co.mcksn.events.type.Waitable;
 
+@SuppressWarnings("rawtypes")
 public class WaitComplexModule extends AbstractWaitModule<ComplexEvent> {
 
 	public WaitComplexModule(ComplexEvent complexEvent) {

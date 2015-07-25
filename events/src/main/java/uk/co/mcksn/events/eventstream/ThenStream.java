@@ -5,6 +5,7 @@ import uk.co.mcksn.events.type.Expectable;
 import uk.co.mcksn.events.type.Simulateable;
 import uk.co.mcksn.events.type.Whenable;
 
+@SuppressWarnings("rawtypes")
 public class ThenStream extends StreamDecorator {
 
 	ThenStream(EventStream eventStream) {

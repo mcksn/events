@@ -100,8 +100,8 @@ public class SRRWhenPlotBBTest extends AbstractWhenPlotBehavior {
 		
 		eventStream.when(reqToCompBWithResponse1);
 		
-		Assert.assertEquals(EventState.OCCURRED, reqToCompBWithResponse1.getEventOccurredModule().getState());
-		Assert.assertEquals(VerificationOutcome.SUCCESS, reqToCompBWithResponse1.getEventOccurredModule().getVerificationOutcome()); 
+		Assert.assertEquals(EventState.OCCURRED, reqToCompBWithResponse1.getOccurredModule().getState());
+		Assert.assertEquals(VerificationOutcome.SUCCESS, reqToCompBWithResponse1.getOccurredModule().getVerificationOutcome()); 
 	}
 
 	/*

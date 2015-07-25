@@ -2,13 +2,14 @@ package uk.co.mcksn.events.event.module.occured;
 
 import uk.co.mcksn.events.enumeration.EventState;
 import uk.co.mcksn.events.enumeration.VerificationOutcome;
+import uk.co.mcksn.events.event.Event;
 import uk.co.mcksn.events.eventhandler.strategy.VerificationStrategyFactory;
 import uk.co.mcksn.events.type.Verifyable;
 
 @SuppressWarnings("rawtypes")
-public class OccurredModule extends AbstractOccuredModule<Verifyable> {
+public class OccurredModule<VerifybleEvent extends Event & Verifyable> extends AbstractOccuredModule<VerifybleEvent> {
 
-	public OccurredModule(Verifyable verifyable) {
+	public OccurredModule(VerifybleEvent verifyable) {
 		super(verifyable);
 	}
 

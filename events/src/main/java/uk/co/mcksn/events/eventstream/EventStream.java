@@ -61,7 +61,7 @@ public class EventStream {
 
 		logRegisterWithStream(RegisterWithStreamType.SIMULATE, simulateableEvent);
 
-		simulateableEvent.getEventOccurredModule().setVerificationStrategyFactory(verificationStrategyFactory);
+		simulateableEvent.getOccurredModule().setVerificationStrategyFactory(verificationStrategyFactory);
 		eventStackWorker.add(simulateableEvent);
 
 		EventHandlerResolver.findApplicableHandler(SimulateHandlerable.class, simulateableEvent,
@@ -86,7 +86,7 @@ public class EventStream {
 
 		whenableEvent.getWaitModule().registerForWait(registerForWaitStrategyFactory);
 
-		whenableEvent.getEventOccurredModule().setVerificationStrategyFactory(verificationStrategyFactory);
+		whenableEvent.getOccurredModule().setVerificationStrategyFactory(verificationStrategyFactory);
 		eventStackWorker.add(whenableEvent);
 
 		whenableEvent.getWaitModule().doWait();
@@ -107,7 +107,7 @@ public class EventStream {
 
 		expectableEvent.getWaitModule().registerForWait(registerForWaitStrategyFactory);
 
-		expectableEvent.getEventOccurredModule().setVerificationStrategyFactory(verificationStrategyFactory);
+		expectableEvent.getOccurredModule().setVerificationStrategyFactory(verificationStrategyFactory);
 		eventStackWorker.add(expectableEvent);
 
 		return new ThenStream(this);

@@ -5,7 +5,7 @@ import java.util.Collection;
 import uk.co.mcksn.events.enumeration.EventState;
 import uk.co.mcksn.events.event.complex.ComplexEvent;
 
-public class OrOccurredModule extends ComplexOccuredModule {
+public class OrOccurredModule extends OccuredComplexModule {
 
 	public OrOccurredModule(ComplexEvent event) {
 		super(event);

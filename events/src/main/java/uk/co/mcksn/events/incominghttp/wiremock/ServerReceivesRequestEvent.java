@@ -4,11 +4,9 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
 import uk.co.mcksn.events.event.Event;
-import uk.co.mcksn.events.event.module.occured.AbstractOccuredModule;
 import uk.co.mcksn.events.event.module.occured.OccurredModule;
 import uk.co.mcksn.events.event.module.tree.TreeModule;
 import uk.co.mcksn.events.event.module.vpolicy.ServerReceivesRequestVerificationPolicyModule;
-import uk.co.mcksn.events.event.module.wait.AbstractWaitModule;
 import uk.co.mcksn.events.event.module.wait.WaitModule;
 import uk.co.mcksn.events.type.Expectable;
 import uk.co.mcksn.events.type.Whenable;
@@ -27,7 +25,6 @@ public class ServerReceivesRequestEvent implements
 	private WaitModule waitModule = new WaitModule(this);
 	private OccurredModule occurredModule = new OccurredModule(this);
 	private TreeModule treeModule = new TreeModule(this);
-
 
 
 	public ServerReceivesRequestEvent() {
@@ -73,17 +70,14 @@ public class ServerReceivesRequestEvent implements
 		this.wireMockServerDef = wireMockServerDef;
 	}
 
-	@Override
-	public AbstractWaitModule getWaitModule() {
+	public WaitModule getWaitModule() {
 		return waitModule;
 	}
 
-	@Override
-	public AbstractOccuredModule getEventOccurredModule() {
+	public OccurredModule getOccurredModule() {
 		return occurredModule;
 	}
 
-	@Override
 	public TreeModule getTreeModule() {
 		return treeModule;
 	}	

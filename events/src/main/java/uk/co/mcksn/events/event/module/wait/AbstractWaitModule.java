@@ -5,13 +5,14 @@ import uk.co.mcksn.events.eventhandler.strategy.RegisterForWaitStrategyFactory;
 import uk.co.mcksn.events.eventstream.EventStream;
 import uk.co.mcksn.events.type.Waitable;
 
-public abstract class AbstractWaitModule<W extends Waitable> {
+@SuppressWarnings("rawtypes")
+public abstract class AbstractWaitModule<WaitableEvent extends Event & Waitable> {
 
-	protected W waitPlotable;
+	protected WaitableEvent waitPlotable;
 
 	private Long timeout = 20000L;
 
-	public AbstractWaitModule(W event) {
+	public AbstractWaitModule(WaitableEvent event) {
 		super();
 		this.waitPlotable = event;
 	}

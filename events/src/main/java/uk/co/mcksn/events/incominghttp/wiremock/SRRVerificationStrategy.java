@@ -9,7 +9,7 @@ public class SRRVerificationStrategy implements VerificationStrategy {
 
 	@Override
 	public VerificationOutcome calculateVerificationOutcome(Verifyable verifyable) {
-		if (!verifyable.getEventOccurredModule().getState().equals(EventState.OCCURRED))
+		if (!verifyable.getOccurredModule().getState().equals(EventState.OCCURRED))
 			return VerificationOutcome.UNKOWN;
 
 		ServerReceivesRequestEvent srrEvent = cast(verifyable);

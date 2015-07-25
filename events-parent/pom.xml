@@ -9,8 +9,8 @@
 	<packaging>pom</packaging>
 
 	<modules>
-		<module>../events-testutil-parent</module>
 		<module>../behavior</module>
+		<module>../events-testutil-parent</module>
 		<module>../stub-srr-when</module>
 		<module>../events</module>
 	</modules>

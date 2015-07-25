@@ -4,14 +4,16 @@ import java.util.Arrays;
 
 import uk.co.mcksn.events.event.Event;
 import uk.co.mcksn.events.event.module.occured.OrOccurredModule;
+import uk.co.mcksn.events.tree.Treeable;
 
-@SuppressWarnings("rawtypes")
+@SuppressWarnings({ "rawtypes", "unchecked" })
 public class OrComplexEvent extends ComplexEvent {
 
-	public OrComplexEvent(Event[] leaves) {
+	public <TreeableEvent extends Event & Treeable>  OrComplexEvent(TreeableEvent... children) {
 		super();
 		this.eventOccuredModule = new OrOccurredModule(this);
-		this.children.addAll(Arrays.asList(leaves));
+		
+		this.addChildren(Arrays.asList(children));
 	}
 
 }

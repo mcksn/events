@@ -1,8 +1,11 @@
 package uk.co.mcksn.events.tree;
 
+import uk.co.mcksn.events.event.Event;
 import uk.co.mcksn.events.event.module.tree.AbstractTreeModule;
 
+@SuppressWarnings("rawtypes")
 public interface Treeable {
-	AbstractTreeModule<Treeable> getTreeModule();
+
+	<T extends Event & Treeable> AbstractTreeModule<T> getTreeModule();
 
 }

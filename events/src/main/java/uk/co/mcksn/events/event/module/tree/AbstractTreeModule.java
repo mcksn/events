@@ -1,27 +1,29 @@
 package uk.co.mcksn.events.event.module.tree;
 
+import uk.co.mcksn.events.event.Event;
 import uk.co.mcksn.events.tree.Treeable;
 
 
-public class AbstractTreeModule<E extends Treeable> {
+@SuppressWarnings("rawtypes")
+public class AbstractTreeModule<TreeableEvent extends Event & Treeable> {
 
-	protected E eventTreeable = null;
-	protected E parent = null;
+	protected TreeableEvent eventTreeable = null;
+	protected TreeableEvent parent = null;
 
-	public AbstractTreeModule(E event) {
+	public AbstractTreeModule(TreeableEvent event) {
 		super();
 		this.eventTreeable = event;
 	}
 
-	public E getParent() {
+	public TreeableEvent getParent() {
 		return parent;
 	}
 
-	public void setParent(E parent) {
+	public void setParent(TreeableEvent parent) {
 		this.parent = parent;
 	}
 
-	public void setParentsOfAllChildren(E rootParent) {
+	public void setParentsOfAllChildren(TreeableEvent rootParent) {
 		parent = rootParent;
 	}
 }

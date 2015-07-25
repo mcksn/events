@@ -5,6 +5,6 @@ import uk.co.mcksn.events.tree.Treeable;
 
 public interface Waitable extends Treeable {
 
-	AbstractWaitModule<Waitable> getWaitModule();
+	AbstractWaitModule<? extends Waitable> getWaitModule();
 
 }
