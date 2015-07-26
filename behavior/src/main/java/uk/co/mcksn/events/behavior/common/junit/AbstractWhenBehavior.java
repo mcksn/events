@@ -1,6 +1,6 @@
 package uk.co.mcksn.events.behavior.common.junit;
 
-public abstract class AbstractWhenPlotBehavior {
+public abstract class AbstractWhenBehavior {
 
 	/*
 	 * Scenario where you want to simulate a event.

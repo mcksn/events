@@ -1,4 +1,4 @@
-package uk.co.mcksn.events.blackbox;
+package uk.co.mcksn.events.unit.behaviour;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
@@ -32,9 +32,9 @@ import uk.co.mcksn.events.httpincoming.wiremock.HttpInEvent;
 import uk.co.mcksn.events.httpincoming.wiremock.HttpInEventHandler;
 import uk.co.mcksn.events.httpincoming.wiremock.WireMockServerDef;
 
-public class HttpInWhenBBTest extends AbstractWhenBehavior {
+public class WhenBehaviourTest extends AbstractWhenBehavior {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(HttpInWhenBBTest.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(WhenBehaviourTest.class);
 
 	private static final String COMPONENT_B_URL = "/compB";
 	private static final String COMPONENT_C_URL = "/compC";

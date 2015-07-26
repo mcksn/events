@@ -19,11 +19,11 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
 import uk.co.mcksn.events.behavior.common.enumeration.AbstractWhenPlotBehaviorEnumeration;
-import uk.co.mcksn.events.behavior.common.junit.AbstractWhenPlotBehavior;
+import uk.co.mcksn.events.behavior.common.junit.AbstractWhenBehavior;
 
 @RequestMapping(value = "/*")
 @RestController
-public class MainController extends AbstractWhenPlotBehavior {
+public class MainController extends AbstractWhenBehavior {
 
 	@Autowired
 	private RestTemplate restClient;
