@@ -7,7 +7,7 @@ import org.junit.runner.notification.RunListener;
 public class JUnitRunListenerImpl extends RunListener {
 
 	private static final String NEW_LINE = "\n";
-	private static final String DECORATER = "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++";
+	private static final String DECORATER = ".........................................................................";
 
 	@Override
 	public void testStarted(Description description) throws Exception {
@@ -26,9 +26,7 @@ public class JUnitRunListenerImpl extends RunListener {
 
 	@Override
 	public void testFailure(Failure failure) throws Exception {
-		decorateStart();
-		System.out.println("Failed: " + getBehavior(failure.getDescription()));
-		decorateEnd();
+		System.err.println("Test Failed");
 	}
 
 	@Override

@@ -13,11 +13,14 @@ import uk.co.mcksn.events.event.Event;
 
 public class WireMockUtil {
 
-	public static HttpInEvent findMatchingEvent(Collection<Event> events,
-			WireMockServerDef wireMockServerDef, Request request) {
+	public static HttpInEvent findMatchingEvent(Collection<Event> events, WireMockServerDef wireMockServerDef,
+			Request request) {
 
 		Event matchingEvent = find(events, mappingMatchingAndInCorrectScenarioState(request), null);
 
+		if (matchingEvent == null) {
+			return null;
+		}
 		if (!((HttpInEvent) matchingEvent).getWireMockServerDef().equals(wireMockServerDef)) {
 			matchingEvent = null;
 		}

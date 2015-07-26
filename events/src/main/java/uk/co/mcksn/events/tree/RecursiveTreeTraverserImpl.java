@@ -4,22 +4,22 @@ package uk.co.mcksn.events.tree;
 public class RecursiveTreeTraverserImpl implements TreeTraverser {
 
 	@SuppressWarnings("unchecked")
-	public <T extends Treeable> T getRootEventTreeable(Class<T> returnType, Treeable eventTreeable) {
+	public <T extends Treeable> T getRootEventTreeable(Class<T> returnType, Treeable treeable) {
 
-		return (T) internalFindRootTreeOfGivenTree(eventTreeable);
+		return (T) internalFindRootTreeOfGivenTree(treeable);
 	}
 
 	private Treeable internalFindRootTreeOfGivenTree(Treeable treeable) {
 
-		Treeable rtnEvent = (Treeable) treeable.getTreeModule().getParent();
+		Treeable nextTreeUp = (Treeable) treeable.getTreeModule().getParent();
 		
-		if (rtnEvent == null) {
+		if (nextTreeUp == null) {
 			return treeable;
 		} else {
-			internalFindRootTreeOfGivenTree(treeable);
+			nextTreeUp = internalFindRootTreeOfGivenTree(nextTreeUp);
 		}
 
-		return treeable;
+		return nextTreeUp;
 
 	}
 

@@ -12,7 +12,7 @@ public class HttpInVerificationPolicyModule implements VerificationPolicyModule 
 
 	private RequestPattern requestPattern;
 
-	public void verify(RequestPatternBuilder requestPatternBuilder) {
+	public void set(RequestPatternBuilder requestPatternBuilder) {
 		requestPattern = requestPatternBuilder.build();
 	}
 	

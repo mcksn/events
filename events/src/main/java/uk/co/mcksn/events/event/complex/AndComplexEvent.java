@@ -14,5 +14,12 @@ public class AndComplexEvent extends ComplexEvent {
 	
 		this.addChildren(Arrays.asList(leaves));
 	}
+	
+	public String getName() {
+		StringBuilder nameBuilder = new StringBuilder();
+		nameBuilder.append("AND");
+		nameBuilder.append("(" + getChildren().size() + ")");
 
+		return nameBuilder.toString();
+	}
 }

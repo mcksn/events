@@ -2,7 +2,6 @@ package uk.co.mcksn.events.eventhandler.strategy;
 
 import java.util.List;
 
-import uk.co.mcksn.events.event.Event;
 import uk.co.mcksn.events.event.type.Waitable;
 import uk.co.mcksn.events.eventstream.AbstractEventHandler;
 import uk.co.mcksn.events.eventstream.WaitHandlerable;
@@ -15,7 +14,7 @@ public class RegisterForWaitStrategyFactory extends AbstractStrategyFactory {
 	}
 
 	public RegisterForWaitStrategy createRegisterForWaitStrategy(Waitable waitable) {
-		return findSuitableLandscape(WaitHandlerable.class, (Event) waitable).getRegisterForWaitStrategy();
+		return findSuitableLandscape(WaitHandlerable.class, waitable).getRegisterForWaitStrategy();
 	}
 
 }

@@ -38,7 +38,8 @@ public class HttpInEventHandler extends AbstractEventHandler implements WaitHand
 
 				public void requestReceived(Request request, Response response) {
 
-					HttpInEventUpdateStackWorkImpl updateEventWork = new HttpInEventUpdateStackWorkImpl(wireMockServerDef, request);
+					HttpInEventUpdateStackWorkImpl updateEventWork = new HttpInEventUpdateStackWorkImpl(
+							wireMockServerDef, request);
 					getEventQueueWorker().doWork(updateEventWork);
 
 				}

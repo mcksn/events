@@ -11,7 +11,7 @@ import uk.co.mcksn.events.event.module.vpolicy.VerificationPolicyModule;
 public abstract class AbstractEvent<A extends ActionModule, R extends ResultModule, V extends VerificationPolicyModule> implements
 		Event<A, R, V>{
 
-	private String name = "Not defined";
+	private String name = "No name defined";
 
 	private OccurredModule occurredModule = new OccurredModule(this);
 

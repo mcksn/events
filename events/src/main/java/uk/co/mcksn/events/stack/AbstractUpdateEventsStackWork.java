@@ -25,12 +25,13 @@ public abstract class AbstractUpdateEventsStackWork<E extends Event> implements 
 
 		E matchedEvent = matchIncidentToEvent(events);
 		
-		updateResultModule(matchedEvent);
-		
 		if (matchedEvent == null) {
 			System.err.println("Event ocurred but not on the Stream.");
 			return;
 		}
+
+		updateResultModule(matchedEvent);
+		
 
 		if (getState(matchedEvent) == EventState.IN_PROGRESS) {
 			return;
@@ -40,7 +41,6 @@ public abstract class AbstractUpdateEventsStackWork<E extends Event> implements 
 		LOGGER.info("Event occured: " + matchedEvent.getName());
 
 		if (matchedEvent instanceof Waitable)
-
 		{
 			Waitable rootMatchedEvent = treeTraverser.getRootEventTreeable(Waitable.class, (Waitable) matchedEvent);
 			EventState rootMatchedEventState = ((Event) rootMatchedEvent).getOccurredModule().getState();
@@ -52,9 +52,7 @@ public abstract class AbstractUpdateEventsStackWork<E extends Event> implements 
 	}
 
 	private void doNotifyOnEvent(Waitable waitable) {
-		if (waitable != null) {
 			waitable.getWaitModule().doNotify();
-		}
 	}
 
 	protected abstract E matchIncidentToEvent(Collection<Event> events);

@@ -1,24 +1,34 @@
 package uk.co.mcksn.events.event.module.tree;
 
-public class AbstractTreeModule<Treeable> {
+import uk.co.mcksn.events.stack.ThreadSafeEventStackWorker;
 
-	protected Treeable eventTreeable = null;
+public abstract class AbstractTreeModule<Treeable> {
+
+	protected Treeable treeable = null;
 	protected Treeable parent = null;
 
 	public AbstractTreeModule(Treeable event) {
 		super();
-		this.eventTreeable = event;
+		this.treeable = event;
 	}
 
 	public Treeable getParent() {
 		return parent;
 	}
 
-	public void setParent(Treeable parent) {
+	protected void setParent(Treeable parent) {
 		this.parent = parent;
 	}
 
-	public void setParentsOfAllChildren(Treeable rootParent) {
-		parent = rootParent;
+	public abstract void linkTree(Treeable parent);
+	
+	public abstract void addTreeToStack(ThreadSafeEventStackWorker stackWorker);
+	
+	public abstract void printTree(int level);
+	
+	protected void printTreeDecorator(int level) {
+		for (int i = 0; i <= level; i++) {
+			System.out.print("    |");
+		}
 	}
 }

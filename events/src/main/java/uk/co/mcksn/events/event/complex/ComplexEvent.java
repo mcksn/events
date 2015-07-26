@@ -13,12 +13,13 @@ import uk.co.mcksn.events.event.module.result.NoResultModule;
 import uk.co.mcksn.events.event.module.tree.TreeComplexModule;
 import uk.co.mcksn.events.event.module.vpolicy.NoVerificationPolicyModule;
 import uk.co.mcksn.events.event.module.wait.WaitComplexModule;
-import uk.co.mcksn.events.event.type.Waitable;
+import uk.co.mcksn.events.event.type.Expectable;
+import uk.co.mcksn.events.event.type.Whenable;
 import uk.co.mcksn.events.tree.Treeable;
 
 @SuppressWarnings("rawtypes")
-public abstract class ComplexEvent
-		implements Waitable<NoActionModule, NoResultModule, NoVerificationPolicyModule> {
+public abstract class ComplexEvent implements Expectable<NoActionModule, NoResultModule, NoVerificationPolicyModule>,
+		Whenable<NoActionModule, NoResultModule, NoVerificationPolicyModule> {
 
 	private String name = "Not defined";
 
@@ -81,7 +82,7 @@ public abstract class ComplexEvent
 
 	}
 
-	public  Collection<Treeable> getChildren() {
+	public Collection<Treeable> getChildren() {
 		return children;
 	}
 

@@ -1,7 +1,10 @@
 package uk.co.mcksn.events.stub.srr.controller;
 
 import static java.lang.Enum.valueOf;
+import static uk.co.mcksn.events.behavior.common.enumeration.AbstractWhenPlotBehaviorEnumeration.SHOULD_wait_for_multiple_events_to_occur_WHEN_when_events_verify_all_events_GIVEN_events_consist_of_multiple_and;
+import static uk.co.mcksn.events.behavior.common.enumeration.AbstractWhenPlotBehaviorEnumeration.SHOULD_wait_for_multiple_events_to_occur_WHEN_when_events_verify_all_events_GIVEN_events_consist_of_multiple_and_with_or;
 
+import java.util.Random;
 import java.util.logging.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +41,9 @@ public class MainController extends AbstractWhenPlotBehavior {
 	public ResponseEntity<String> invokeTest(@RequestParam("behaviorName") String name) throws Exception {
 
 		AbstractWhenPlotBehaviorEnumeration behaviorEnum = null;
+		HttpHeaders headers = null;
+		HttpEntity<String> requestEntity = null;
+
 		try {
 			behaviorEnum = valueOf(AbstractWhenPlotBehaviorEnumeration.class, name);
 		} catch (IllegalArgumentException illegalArgumentException) {
@@ -45,21 +51,48 @@ public class MainController extends AbstractWhenPlotBehavior {
 			throw illegalArgumentException;
 		}
 
+		headers = new HttpHeaders();
+		headers.add("a header", behaviorEnum.name());
+		requestEntity = new HttpEntity<String>(headers);
+
 		ResponseEntity<String> rtnValue = response1;
 
 		switch (behaviorEnum) {
 		case SHOULD_wait_for_event_to_occur_WHEN_when_event_GIVEN_event_can_be_waited_for:
 
-			HttpHeaders headers = new HttpHeaders();
-			headers.add("a header", behaviorEnum.name());
+			restClient.exchange(COMPONENT_B_URL, HttpMethod.GET, requestEntity, String.class);
+			break;
+		case SHOULD_wait_for_multiple_events_to_occur_WHEN_when_events_verify_all_events_GIVEN_events_consist_of_multiple_and:
 
-			HttpEntity<String> requestEntity = new HttpEntity<String>(headers);
-
-			//Thread.sleep(20000L);
-			restClient.exchange(COMPONENT_B_URL, HttpMethod.GET, requestEntity, String.class, new Object[0]);
-			//restClient.getForEntity(COMPONENT_B_URL, String.class);
+			restClient.exchange(COMPONENT_B_URL + "/{requestDiscriminator}", HttpMethod.GET, requestEntity,
+					String.class, "1");
+			restClient.exchange(COMPONENT_B_URL + "/{requestDiscriminator}", HttpMethod.GET, requestEntity,
+					String.class, "2");
 			break;
 
+		case SHOULD_wait_for_multiple_events_to_occur_WHEN_when_events_verify_all_events_GIVEN_events_consist_of_multiple_or:
+
+			if (new Random().nextInt() % 2 == 0) {
+				restClient.exchange(COMPONENT_B_URL + "/{requestDiscriminator}", HttpMethod.GET, requestEntity,
+						String.class, "1");
+			} else {
+				restClient.exchange(COMPONENT_B_URL + "/{requestDiscriminator}", HttpMethod.GET, requestEntity,
+						String.class, "2");
+			}
+			break;
+		case SHOULD_wait_for_multiple_events_to_occur_WHEN_when_events_verify_all_events_GIVEN_events_consist_of_multiple_and_with_or:
+
+			if (new Random().nextInt() % 2 == 0) {
+				restClient.exchange(COMPONENT_B_URL + "/{requestDiscriminator}", HttpMethod.GET, requestEntity,
+						String.class, "1");
+				restClient.exchange(COMPONENT_B_URL + "/{requestDiscriminator}", HttpMethod.GET, requestEntity,
+						String.class, "2");
+			} else {
+
+				restClient.exchange(COMPONENT_B_URL + "/{requestDiscriminator}", HttpMethod.GET, requestEntity,
+						String.class, "3");
+			}
+			break;
 		default:
 			throw new Exception(MSG_BEHAVIOR_NAME_SUPPLIED_COULD_NOT_BE_MATCHED_WITH_A_STUB);
 		}

@@ -11,7 +11,7 @@ import uk.co.mcksn.events.blackbox.util.wiremock.notifier.WireMockNotifierImpl;
 
 public class UtilityProvider implements CleanUpable {
 
-	public ExecutorService executorService = ExecutorServiceSingleton.getInstance();
+	public ExecutorService executorService = ExecutorServiceSingleton.getNewInstance();
 	public Collection<ApacheHttpClientUtil> apacheHttpClientUtils = new ArrayList<ApacheHttpClientUtil>();
 	private long TIMEOUT_WAITING_FOR_HTTP_CLIENTREQUEST_TO_COMPLETE = 800L;
 
@@ -43,11 +43,8 @@ public class UtilityProvider implements CleanUpable {
 
 		private static ExecutorService executorService = null;
 
-		public static ExecutorService getInstance() {
-			if (executorService == null) {
-				executorService = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
-			}
-
+		public static ExecutorService getNewInstance() {
+			executorService = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
 			return executorService;
 		}
 

@@ -11,7 +11,6 @@ public class WireMockNotifierImpl implements Notifier {
 
 	@Override
 	public void info(String message) {
-		//System.out.println(message);
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug(message);
 		}
@@ -20,7 +19,6 @@ public class WireMockNotifierImpl implements Notifier {
 
 	@Override
 	public void error(String message) {
-		//System.err.println(message);
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug(message);
 		}
@@ -29,7 +27,6 @@ public class WireMockNotifierImpl implements Notifier {
 
 	@Override
 	public void error(String message, Throwable t) {
-		//System.err.println(message + " " + t);
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug(message, t);
 		}

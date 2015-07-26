@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import uk.co.mcksn.events.enumeration.RegisterWithStreamType;
 import uk.co.mcksn.events.event.Event;
+import uk.co.mcksn.events.event.complex.ComplexEvent;
 import uk.co.mcksn.events.event.type.Expectable;
 import uk.co.mcksn.events.event.type.Simulateable;
 import uk.co.mcksn.events.event.type.Waitable;
@@ -17,6 +18,7 @@ import uk.co.mcksn.events.eventhandler.strategy.RegisterForWaitStrategyFactory;
 import uk.co.mcksn.events.eventhandler.strategy.VerificationStrategyFactory;
 import uk.co.mcksn.events.eventhandler.util.EventHandlerResolver;
 import uk.co.mcksn.events.stack.ThreadSafeEventStackWorker;
+import uk.co.mcksn.events.tree.Treeable;
 
 /**
  * A story is a sequence of {@link Event}s that will perform a testable
@@ -94,13 +96,14 @@ public class EventStream {
 
 	public void internalWait(Waitable waitable) {
 
-		waitable.getTreeModule().setParentsOfAllChildren(null);
+		
+		waitable.getTreeModule().linkTree(null);
 
 		waitable.getWaitModule().registerForWait(registerForWaitStrategyFactory);
 
 		waitable.getOccurredModule().setVerificationStrategyFactory(verificationStrategyFactory);
-		eventStackWorker.add(waitable);
 
+		waitable.getTreeModule().addTreeToStack(eventStackWorker);
 	}
 
 	ThreadSafeEventStackWorker getEventQueueWorker() {
