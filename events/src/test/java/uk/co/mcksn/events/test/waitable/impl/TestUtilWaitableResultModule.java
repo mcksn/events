@@ -1,27 +1,20 @@
 package uk.co.mcksn.events.test.waitable.impl;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import com.github.tomakehurst.wiremock.verification.LoggedRequest;
-
 import uk.co.mcksn.events.event.module.result.ResultModule;
 
 public class TestUtilWaitableResultModule implements ResultModule {
 
-	private List<LoggedRequest> loggedRequests = new ArrayList<LoggedRequest>();
+	private Integer value = null;
 
-	public int getLoggedRequestCount() {
-		return loggedRequests.size();
+	public int getValue() {
+		if (value == null) {
+			throw new RuntimeException("Result not set for event");
+		}
+		return value;
 	}
 
-	public void addLoggedRequest(LoggedRequest loggedRequest) {
-		this.loggedRequests.add(loggedRequest);
-	}
-
-	public List<LoggedRequest> getLoggedRequestIterator() {
-		return new ArrayList<LoggedRequest>(loggedRequests);
-
+	public void setValue(Integer value) {
+		this.value = value;
 	}
 
 }

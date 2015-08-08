@@ -6,6 +6,7 @@ import java.util.List;
 import uk.co.mcksn.events.event.Event;
 import uk.co.mcksn.events.eventhandler.util.EventHandlerResolver;
 import uk.co.mcksn.events.eventstream.AbstractEventHandler;
+import uk.co.mcksn.events.eventstream.EventHandlerable;
 
 @SuppressWarnings("rawtypes")
 public class AbstractStrategyFactory {
@@ -22,7 +23,7 @@ public class AbstractStrategyFactory {
 		return EventHandlerResolver.findApplicableHandler(returnType, event, availableEventHandlers);
 	}
 	
-	protected AbstractEventHandler findSuitableLandscape(Event event) {
+	protected EventHandlerable findSuitableLandscape(Event event) {
 		return EventHandlerResolver.findApplicableHandler(AbstractEventHandler.class, event, availableEventHandlers);
 	}
 

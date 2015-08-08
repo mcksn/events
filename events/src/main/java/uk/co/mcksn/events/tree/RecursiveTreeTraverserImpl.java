@@ -12,7 +12,7 @@ public class RecursiveTreeTraverserImpl implements TreeTraverser {
 	private Treeable internalFindRootTreeOfGivenTree(Treeable treeable) {
 
 		Treeable nextTreeUp = (Treeable) treeable.getTreeModule().getParent();
-		
+
 		if (nextTreeUp == null) {
 			return treeable;
 		} else {

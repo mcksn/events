@@ -1,46 +1,63 @@
 package uk.co.mcksn.events.test.waitable.impl;
 
+import static com.google.common.collect.Iterables.*;
+
 import java.util.Collection;
 
-import com.github.tomakehurst.wiremock.http.Request;
-import com.github.tomakehurst.wiremock.verification.LoggedRequest;
+import com.google.common.base.Predicate;
 
 import uk.co.mcksn.events.enumeration.EventState;
 import uk.co.mcksn.events.event.Event;
-import uk.co.mcksn.events.httpincoming.wiremock.HttpInEvent;
-import uk.co.mcksn.events.httpincoming.wiremock.WireMockServerDef;
-import uk.co.mcksn.events.httpincoming.wiremock.WireMockUtil;
 import uk.co.mcksn.events.stack.AbstractUpdateEventsStackWork;
-import uk.co.mcksn.events.tree.RecursiveTreeTraverserImpl;
-import uk.co.mcksn.events.tree.TreeTraverser;
 
 @SuppressWarnings("rawtypes")
-public class TestUtilWaitableUpdateStackWorkImpl extends AbstractUpdateEventsStackWork<HttpInEvent> {
+public class TestUtilWaitableUpdateStackWorkImpl extends AbstractUpdateEventsStackWork<TestUtilWaitableEvent> {
 
-	WireMockServerDef wireMockServerDef = null;
-	Request request = null;
-	TreeTraverser treeTraverser = new RecursiveTreeTraverserImpl();
+	private int watchableObjChange = 0;
 
-	public TestUtilWaitableUpdateStackWorkImpl(WireMockServerDef wireMockServerDef, Request request) {
-		this.wireMockServerDef = wireMockServerDef;
-		this.request = request;
+	public TestUtilWaitableUpdateStackWorkImpl(int watchableObjChange) {
+		this.watchableObjChange = watchableObjChange;
 	}
 
-	protected HttpInEvent matchIncidentToEvent(Collection<Event> events) {
-		return WireMockUtil.findMatchingEvent(events, wireMockServerDef, request);
+	protected TestUtilWaitableEvent matchIncidentToEvent(Collection<Event> events) {
+		return findMatchingEvent(events, watchableObjChange);
 	}
 
-	protected void updateResultModule(HttpInEvent matchedEvent) {
-		matchedEvent.getResultModule().addLoggedRequest(LoggedRequest.createFrom(request));
-
+	protected void updateResultModule(TestUtilWaitableEvent matchedEvent) {
+		matchedEvent.getResultModule().setValue(watchableObjChange);
 	}
 
-	protected EventState getState(HttpInEvent matchedEvent) {
+	protected EventState getState(TestUtilWaitableEvent matchedEvent) {
 
-		if (matchedEvent.getResultModule().getLoggedRequestCount() == matchedEvent.getActionModule().getTimes())
+		if (matchedEvent.getResultModule().getValue() == matchedEvent.getActionModule().getChange())
 			return EventState.OCCURRED;
 		else
 			return EventState.IN_PROGRESS;
+
+	}
+
+	private static TestUtilWaitableEvent findMatchingEvent(Collection<Event> events, int change) {
+
+		Event matchingEvent = find(events, watchableObjChangeMatchesEvent(change), null);
+
+		if (matchingEvent == null) {
+			return null;
+		}
+
+		return (TestUtilWaitableEvent) matchingEvent;
+
+	}
+
+	private static Predicate<Event> watchableObjChangeMatchesEvent(final int actualChange) {
+		return new Predicate<Event>() {
+			public boolean apply(Event event) {
+				TestUtilWaitableEvent testUtilEvent = (TestUtilWaitableEvent) event;
+				int eventExpectedChange = testUtilEvent.getActionModule().getChange();
+				return eventExpectedChange == actualChange
+						&& !event.getOccurredModule().getState().equals(EventState.OCCURRED);
+			}
+
+		};
 
 	}
 }
