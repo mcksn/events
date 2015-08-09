@@ -15,14 +15,18 @@ public abstract class AbstractEventHandler implements EventHandlerable {
 	@Override
 	public abstract VerificationStrategy getVerificationStrategy();
 
-	protected void setEventStream(EventStream eventStream) {
+	public void setEventStream(EventStream eventStream) {
 		this.eventStream = eventStream;
 	}
 
-	protected ThreadSafeEventStackWorker getEventQueueWorker() {
+	public ThreadSafeEventStackWorker getEventQueueWorker() {
 		return eventStream.getEventQueueWorker();
 	}
 	
+	@Override
+	public void cleanUp() {
+		//do nothing	
+	}
 
 
 }

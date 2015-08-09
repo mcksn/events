@@ -35,23 +35,27 @@ public class EventStream {
 	/**
 	 * Specify the landscapes the story will be set in and start the story
 	 * 
-	 * @param abstractEventHandlers
+	 * @param eventHandlerable
 	 * @return
 	 */
-	public static EventStream given(AbstractEventHandler abstractEventHandlers) {
+	public static EventStream given(EventHandlerable ...eventHandlerables) {
 
 		EventStream newEventStream = new EventStream();
-		for (AbstractEventHandler eventHandler : Arrays.asList(abstractEventHandlers)) {
+		for (EventHandlerable eventHandler : Arrays.asList(eventHandlerables)) {
 			eventHandler.setEventStream(newEventStream);
 		}
 
-		newEventStream.availableEventHandlers.addAll(Arrays.asList(abstractEventHandlers));
+		newEventStream.availableEventHandlers.addAll(Arrays.asList(eventHandlerables));
 		newEventStream.verificationStrategyFactory = new VerificationStrategyFactory(
 				newEventStream.availableEventHandlers);
+		for (EventHandlerable eventHandler : Arrays.asList(eventHandlerables)) {
+			eventHandler.startWatching();
+		}
+		
 		return newEventStream;
 	}
 
-	private List<AbstractEventHandler> availableEventHandlers = new ArrayList<AbstractEventHandler>();
+	private List<EventHandlerable> availableEventHandlers = new ArrayList<EventHandlerable>();
 
 	private ThreadSafeEventStackWorker eventStackWorker = new ThreadSafeEventStackWorker();
 

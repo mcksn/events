@@ -1,19 +1,12 @@
 package uk.co.mcksn.events.test.waitable.impl;
 
-import java.nio.file.FileSystems;
-import java.nio.file.Path;
-import java.nio.file.StandardWatchEventKinds;
-import java.nio.file.WatchEvent;
-import java.nio.file.WatchKey;
-import java.nio.file.WatchService;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import com.github.tomakehurst.wiremock.http.Request;
-import com.github.tomakehurst.wiremock.http.Response;
 
 import uk.co.mcksn.events.event.Event;
 import uk.co.mcksn.events.eventhandler.strategy.RegisterForWaitStrategy;
@@ -28,8 +21,6 @@ import uk.co.mcksn.events.httpincoming.wiremock.HttpInVerificationStrategy;
 @SuppressWarnings("rawtypes")
 public class TestUtilWaitableEventHandler extends AbstractEventHandler implements WaitHandlerable {
 
-	private List<AtomicInteger> watchableObjects = new ArrayList<AtomicInteger>();
-
 	public static EventHandlerable looksLike(AtomicInteger... watchableObjects) {
 
 		TestUtilWaitableEventHandler eventHandler = new TestUtilWaitableEventHandler();
@@ -38,16 +29,26 @@ public class TestUtilWaitableEventHandler extends AbstractEventHandler implement
 		return eventHandler;
 	}
 
-	protected void configureEachWireMockServer() {
+	private List<AtomicInteger> watchableObjects = new ArrayList<AtomicInteger>();
+
+	private ExecutorService executorService = Executors.newFixedThreadPool(10);
+	
+	public void startWatching()
+	{
+		configureWatchForEachWatchable();
+	}
+
+	protected void configureWatchForEachWatchable() {
 
 		for (final AtomicInteger watchableObject : watchableObjects) {
-			new Thread(new Runnable() {
+
+			executorService.execute(new Runnable() {
 
 				@Override
 				public void run() {
 					Date beforeLoopDate = new Date();
 					// Date expectedLoopEndDate = new Date(beforeLoopDate).;
-					for (;;) {
+					for (int i = 0; i < 20; i++) {
 						try {
 							Thread.sleep(100L);
 						} catch (InterruptedException e) {
@@ -67,16 +68,20 @@ public class TestUtilWaitableEventHandler extends AbstractEventHandler implement
 
 	@Override
 	public VerificationStrategy getVerificationStrategy() {
-		return new HttpInVerificationStrategy();
+		return new TestUtilWaitableVerificationStrategy();
 	}
 
 	@Override
 	public RegisterForWaitStrategy getRegisterForWaitStrategy() {
-		return new HttpInRegisterForWaitStrategy();
+		return new TestUtilWaitableRegisterForWaitStrategy();
 	}
 
 	@Override
 	public Class<? extends Event> getEventType() {
-		return HttpInEvent.class;
+		return TestUtilWaitableEvent.class;
+	}
+
+	public void cleanUp() {
+		executorService.shutdownNow();
 	}
 }

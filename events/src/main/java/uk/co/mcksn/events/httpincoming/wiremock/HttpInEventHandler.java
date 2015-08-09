@@ -28,6 +28,11 @@ public class HttpInEventHandler extends AbstractEventHandler implements WaitHand
 
 		return eventHandler;
 	}
+	
+	public void startWatching()
+	{
+		configureEachWireMockServer();
+	}
 
 	protected void configureEachWireMockServer() {
 

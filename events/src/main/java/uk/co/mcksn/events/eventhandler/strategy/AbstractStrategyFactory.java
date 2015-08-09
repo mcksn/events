@@ -13,9 +13,9 @@ public class AbstractStrategyFactory {
 	
 	EventHandlerResolver eventHandlerResolver = new EventHandlerResolver();
 
-	protected List<AbstractEventHandler> availableEventHandlers = new ArrayList<AbstractEventHandler>();
+	protected List<EventHandlerable> availableEventHandlers = new ArrayList<EventHandlerable>();
 
-	public AbstractStrategyFactory(List<AbstractEventHandler> availableEventHandlers) {
+	public AbstractStrategyFactory(List<EventHandlerable> availableEventHandlers) {
 		this.availableEventHandlers = availableEventHandlers;
 	}
 

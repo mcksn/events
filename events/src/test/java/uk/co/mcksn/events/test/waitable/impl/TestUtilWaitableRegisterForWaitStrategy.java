@@ -8,16 +8,6 @@ import uk.co.mcksn.events.httpincoming.wiremock.HttpInEvent;
 public class TestUtilWaitableRegisterForWaitStrategy implements RegisterForWaitStrategy {
 
 	public void registerForWait(Waitable waitable) {
-
-		HttpInEvent httpInEvent = cast(waitable);
-
-		httpInEvent.getWireMockServerDef().getWireMockServer().addStubMapping(httpInEvent.getActionModule().getStubMapping());
-	}
-
-	private static HttpInEvent cast(Waitable waitable) {
-		if (waitable instanceof HttpInEvent) {
-			return (HttpInEvent) waitable;
-		}
-		throw new RuntimeException("Can not cast object to " + HttpInEvent.class.getName());
+		// do nothing
 	}
 }
