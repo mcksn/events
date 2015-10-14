@@ -16,21 +16,23 @@ import uk.co.mcksn.events.test.waitable.impl.TestUtilWaitableEvent;
 import uk.co.mcksn.events.test.waitable.impl.TestUtilWaitableEventHandler;
 
 public class WhenUsageTest {
-	
+
 	@Test
 	public void SHOULD_wait_for_event_to_occur_WHEN_when_event_GIVEN_event_can_be_waited_for() {
 
+		// Given
 		TestUtilWaitableEvent testUtilWaitableEvent = new TestUtilWaitableEvent();
+		testUtilWaitableEvent.setName("testUtilWaitableEvent");
 		testUtilWaitableEvent.getActionModule().setChange(0);
 
 		final AtomicInteger watchableInt = new AtomicInteger(1);
-		
-		EventHandlerable eventHandler =  TestUtilWaitableEventHandler.looksLike(watchableInt);
-		
+
+		EventHandlerable eventHandler = TestUtilWaitableEventHandler.looksLike(watchableInt);
+
 		EventStream eventStream = EventStream.given(eventHandler);
-		
+
 		ExecutorServiceUtil.getExecutorService().execute(new Runnable() {
-			
+
 			@Override
 			public void run() {
 				try {
@@ -41,15 +43,14 @@ public class WhenUsageTest {
 				watchableInt.set(0);
 			}
 		});
-		
 
+		// When
 		eventStream.when(testUtilWaitableEvent);
 
+		// Then
 		Assert.assertThat(testUtilWaitableEvent.getOccurredModule().getState(), is(equalTo(EventState.OCCURRED)));
-		
+
 		eventHandler.cleanUp();
 	}
-	
-	
 
 }

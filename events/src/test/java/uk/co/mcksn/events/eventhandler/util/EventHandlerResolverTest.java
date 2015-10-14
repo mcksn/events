@@ -19,13 +19,8 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import uk.co.mcksn.events.event.AbstractEvent;
 import uk.co.mcksn.events.eventstream.EventHandlerable;
 
-@RunWith(PowerMockRunner.class)
 @SuppressWarnings("rawtypes")
-@PrepareForTest(value = EventHandlerResolver.class)
 public class EventHandlerResolverTest {
-
-	@Mock
-	private MockEvent mockEvent;
 
 	@Before
 	public void setUp() throws Exception {
@@ -37,12 +32,13 @@ public class EventHandlerResolverTest {
 
 		// Given
 		MockEventHandler mockEventHandlerable = mock(MockEventHandler.class);
+		MockEvent mockEvent  = mock(MockEvent.class);
 
 		doReturn(MockEvent.class).when(mockEventHandlerable).getEventType();
 		List<EventHandlerable> eventHandlerablesArg = Arrays.asList((EventHandlerable) mockEventHandlerable);
 
 		// When
-		MockEventHandler actualEventHandler = EventHandlerResolver.findApplicableHandler(MockEventHandler.class,
+		MockEventHandler actualEventHandler = new EventHandlerResolver().findApplicableHandler(MockEventHandler.class,
 				mockEvent, eventHandlerablesArg);
 
 		// Then

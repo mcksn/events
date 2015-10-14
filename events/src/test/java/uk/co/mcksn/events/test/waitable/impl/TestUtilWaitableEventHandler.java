@@ -32,9 +32,8 @@ public class TestUtilWaitableEventHandler extends AbstractEventHandler implement
 	private List<AtomicInteger> watchableObjects = new ArrayList<AtomicInteger>();
 
 	private ExecutorService executorService = Executors.newFixedThreadPool(10);
-	
-	public void startWatching()
-	{
+
+	public void startWatching() {
 		configureWatchForEachWatchable();
 	}
 
@@ -42,28 +41,30 @@ public class TestUtilWaitableEventHandler extends AbstractEventHandler implement
 
 		for (final AtomicInteger watchableObject : watchableObjects) {
 
-			executorService.execute(new Runnable() {
+			configureWatchForAWatchable(watchableObject);
+		}
+	}
 
-				@Override
-				public void run() {
-					Date beforeLoopDate = new Date();
-					// Date expectedLoopEndDate = new Date(beforeLoopDate).;
-					for (int i = 0; i < 20; i++) {
-						try {
-							Thread.sleep(100L);
-						} catch (InterruptedException e) {
-							e.printStackTrace();
-						}
+	protected void configureWatchForAWatchable(final AtomicInteger watchableObj) {
 
-						TestUtilWaitableUpdateStackWorkImpl updateEventWork = new TestUtilWaitableUpdateStackWorkImpl(
-								watchableObject.get());
-						getEventQueueWorker().doWork(updateEventWork);
-						// if (beforeLoopDate.before(new Date())
+		executorService.execute(new Runnable() {
+
+			@Override
+			public void run() {
+				for (int i = 0; i < 20; i++) {
+					try {
+						Thread.sleep(100L);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
 					}
 
+					TestUtilWaitableUpdateStackWorkImpl updateEventWork = new TestUtilWaitableUpdateStackWorkImpl(
+							watchableObj.get());
+					getEventQueueWorker().doWork(updateEventWork);
 				}
-			});
-		}
+
+			}
+		});
 	}
 
 	@Override

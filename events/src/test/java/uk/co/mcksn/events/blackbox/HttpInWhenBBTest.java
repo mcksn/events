@@ -4,22 +4,28 @@ import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
-import static uk.co.mcksn.events.behavior.common.enumeration.AbstractWhenPlotBehaviorEnumeration.SHOULD_wait_for_event_to_occur_WHEN_when_event_GIVEN_event_can_be_waited_for;
-import static uk.co.mcksn.events.behavior.common.enumeration.AbstractWhenPlotBehaviorEnumeration.SHOULD_wait_for_multiple_events_to_occur_WHEN_when_events_verify_all_events_GIVEN_events_consist_of_multiple_and;
-import static uk.co.mcksn.events.behavior.common.enumeration.AbstractWhenPlotBehaviorEnumeration.SHOULD_wait_for_multiple_events_to_occur_WHEN_when_events_verify_all_events_GIVEN_events_consist_of_multiple_and_with_or;
-import static uk.co.mcksn.events.behavior.common.enumeration.AbstractWhenPlotBehaviorEnumeration.SHOULD_wait_for_multiple_events_to_occur_WHEN_when_events_verify_all_events_GIVEN_events_consist_of_multiple_or;
 
+import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.shrinkwrap.api.ShrinkWrap;
+import org.jboss.shrinkwrap.api.importer.ZipImporter;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.jboss.shrinkwrap.impl.base.spec.WebArchiveImpl;
+import org.jboss.shrinkwrap.resolver.api.maven.Maven;
+import org.jboss.shrinkwrap.resolver.api.maven.MavenResolvedArtifact;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestName;
+import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.MappingBuilder;
 
-import uk.co.mcksn.events.behavior.common.enumeration.AbstractWhenPlotBehaviorEnumeration;
 import uk.co.mcksn.events.behavior.common.junit.AbstractWhenBehavior;
 import uk.co.mcksn.events.blackbox.util.common.UtilityProvider;
 import uk.co.mcksn.events.blackbox.util.wiremock.notifier.WireMockNotifierImpl;
@@ -32,6 +38,7 @@ import uk.co.mcksn.events.httpincoming.wiremock.HttpInEvent;
 import uk.co.mcksn.events.httpincoming.wiremock.HttpInEventHandler;
 import uk.co.mcksn.events.httpincoming.wiremock.WireMockServerDef;
 
+@RunWith(Arquillian.class)
 public class HttpInWhenBBTest extends AbstractWhenBehavior {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(HttpInWhenBBTest.class);
@@ -39,9 +46,29 @@ public class HttpInWhenBBTest extends AbstractWhenBehavior {
 	private static final String COMPONENT_B_URL = "/compB";
 	private static final String COMPONENT_C_URL = "/compC";
 
-	private static String TEST_UTILITY_URL = "http://localhost:8080/stub-srr-when/invokeTest";
+	private static String TEST_UTILITY_URL = "http://localhost:8080/stub-srr-when/";
 
 	private static UtilityProvider utilityProvider = null;
+	
+	@Rule
+	public TestName testName = new TestName() ;
+
+	@Deployment(testable = false)
+	public static WebArchive createDeployment() {
+		// WebArchive yours = ShrinkWrap.create(WebArchive.class);
+		MavenResolvedArtifact mavenResolvedWar = Maven.resolver().resolve("uk.co.mcksn:stub-srr-when:war:0.0.1-SNAPSHOT")
+				.withTransitivity().asSingleResolvedArtifact();
+		
+		WebArchive renamedWar = ShrinkWrap
+				  .create(ZipImporter.class, "stub-srr-when.war")
+				  .importFrom(mavenResolvedWar.asFile())
+				  .as(WebArchive.class);
+		
+		WebArchive ac =  mavenResolvedWar.as(WebArchive.class);
+		
+		return renamedWar;
+
+	}
 
 	private AbstractEventHandler httpInEventHandler = null;
 
@@ -51,8 +78,7 @@ public class HttpInWhenBBTest extends AbstractWhenBehavior {
 	private WireMockServerDef wireMockServerDefC = WireMockServerDef.buildDefintion(
 			new WireMockServer(wireMockConfig().notifier(new WireMockNotifierImpl()).port(8052)), "Comp C");
 
-	private HttpInEvent defineBaseEventRequests(WireMockServerDef respondingServer, final String url,
-			AbstractWhenPlotBehaviorEnumeration behaviorEnum, String requestDiscriminator) {
+	private HttpInEvent defineBaseEventRequests(WireMockServerDef respondingServer, final String url, String requestDiscriminator) {
 
 		if (requestDiscriminator != null)
 			requestDiscriminator = "/" + requestDiscriminator;
@@ -70,15 +96,15 @@ public class HttpInWhenBBTest extends AbstractWhenBehavior {
 
 	}
 
-	private HttpInEvent defineRequestsToCompB(AbstractWhenPlotBehaviorEnumeration behaviorEnum,
+	private HttpInEvent defineRequestsToCompB(
 			String requestDiscriminator) {
 
-		HttpInEvent event = defineBaseEventRequests(wireMockServerDefB, COMPONENT_B_URL, behaviorEnum,
+		HttpInEvent event = defineBaseEventRequests(wireMockServerDefB, COMPONENT_B_URL,
 				requestDiscriminator);
-		
+
 		if (requestDiscriminator == null)
 			requestDiscriminator = "Not name defined";
-		
+
 		event.setName("Event: " + requestDiscriminator);
 		return event;
 
@@ -93,7 +119,7 @@ public class HttpInWhenBBTest extends AbstractWhenBehavior {
 	@After
 	public void after() {
 
-		 utilityProvider.cleanUp();
+		utilityProvider.cleanUp();
 
 		if (wireMockServerDefB.getWireMockServer().isRunning()) {
 			wireMockServerDefB.getWireMockServer().stop();
@@ -107,19 +133,18 @@ public class HttpInWhenBBTest extends AbstractWhenBehavior {
 	@Test
 	public void SHOULD_wait_for_event_to_occur_WHEN_when_event_GIVEN_event_can_be_waited_for() {
 
-		final AbstractWhenPlotBehaviorEnumeration behaviorEnum = SHOULD_wait_for_event_to_occur_WHEN_when_event_GIVEN_event_can_be_waited_for;
-		HttpInEvent reqToCompBWithResponse = defineRequestsToCompB(behaviorEnum, null);
+		HttpInEvent reqToCompBWithResponse = defineRequestsToCompB(null);
 
 		EventStream eventStream = EventStream.given(httpInEventHandler);
 
 		// invoke test
-		utilityProvider.getNewHttpClientInstance(TEST_UTILITY_URL).sendGet(behaviorEnum.name());
+		utilityProvider.getNewHttpClientInstance(TEST_UTILITY_URL).sendGet(testName.getMethodName());
 
 		eventStream.when(reqToCompBWithResponse);
 
 		Assert.assertEquals(EventState.OCCURRED, reqToCompBWithResponse.getOccurredModule().getState());
 
-		Assert.assertEquals(behaviorEnum.name(),
+		Assert.assertEquals(testName.getMethodName(),
 				reqToCompBWithResponse.getResultModule().getLoggedRequestIterator().get(0).getHeader("a header"));
 	}
 
@@ -127,14 +152,13 @@ public class HttpInWhenBBTest extends AbstractWhenBehavior {
 	@Test
 	public void SHOULD_wait_for_multiple_events_to_occur_WHEN_when_events_verify_all_events_GIVEN_events_consist_of_multiple_and() {
 
-		final AbstractWhenPlotBehaviorEnumeration behaviorEnum = SHOULD_wait_for_multiple_events_to_occur_WHEN_when_events_verify_all_events_GIVEN_events_consist_of_multiple_and;
-		HttpInEvent reqToCompBWithResponse2 = defineRequestsToCompB(behaviorEnum, "2");
-		HttpInEvent reqToCompBWithResponse1 = defineRequestsToCompB(behaviorEnum, "1");
+		HttpInEvent reqToCompBWithResponse2 = defineRequestsToCompB("2");
+		HttpInEvent reqToCompBWithResponse1 = defineRequestsToCompB("1");
 
 		EventStream eventStream = EventStream.given(httpInEventHandler);
 
 		// invoke test utility
-		utilityProvider.getNewHttpClientInstance(TEST_UTILITY_URL).sendGet(behaviorEnum.name());
+		utilityProvider.getNewHttpClientInstance(TEST_UTILITY_URL).sendGet(testName.getMethodName());
 
 		eventStream.when(WaitComplexEventBuilder.and(reqToCompBWithResponse1, reqToCompBWithResponse2));
 
@@ -151,14 +175,13 @@ public class HttpInWhenBBTest extends AbstractWhenBehavior {
 	@Test
 	public void SHOULD_wait_for_multiple_events_to_occur_WHEN_when_events_verify_all_events_GIVEN_events_consist_of_multiple_or() {
 
-		final AbstractWhenPlotBehaviorEnumeration behaviorEnum = SHOULD_wait_for_multiple_events_to_occur_WHEN_when_events_verify_all_events_GIVEN_events_consist_of_multiple_or;
-		HttpInEvent reqToCompBWithResponse1 = defineRequestsToCompB(behaviorEnum, "1");
-		HttpInEvent reqToCompBWithResponse2 = defineRequestsToCompB(behaviorEnum, "2");
+		HttpInEvent reqToCompBWithResponse1 = defineRequestsToCompB( "1");
+		HttpInEvent reqToCompBWithResponse2 = defineRequestsToCompB( "2");
 
 		EventStream eventStream = EventStream.given(httpInEventHandler);
 
 		// invoke test utility
-		utilityProvider.getNewHttpClientInstance(TEST_UTILITY_URL).sendGet(behaviorEnum.name());
+		utilityProvider.getNewHttpClientInstance(TEST_UTILITY_URL).sendGet(testName.getMethodName());
 
 		eventStream.when(WaitComplexEventBuilder.or(reqToCompBWithResponse1, reqToCompBWithResponse2));
 
@@ -170,11 +193,9 @@ public class HttpInWhenBBTest extends AbstractWhenBehavior {
 	@Override
 	@Test
 	public void SHOULD_wait_for_multiple_events_to_occur_WHEN_when_events_verify_all_events_GIVEN_events_consist_of_multiple_and_with_or() {
-
-		final AbstractWhenPlotBehaviorEnumeration behaviorEnum = SHOULD_wait_for_multiple_events_to_occur_WHEN_when_events_verify_all_events_GIVEN_events_consist_of_multiple_and_with_or;
-		HttpInEvent reqToCompBWithResponse1 = defineRequestsToCompB(behaviorEnum, "1");
-		HttpInEvent reqToCompBWithResponse2 = defineRequestsToCompB(behaviorEnum, "2");
-		HttpInEvent reqToCompBWithResponse3 = defineRequestsToCompB(behaviorEnum, "3");
+		HttpInEvent reqToCompBWithResponse1 = defineRequestsToCompB( "1");
+		HttpInEvent reqToCompBWithResponse2 = defineRequestsToCompB("2");
+		HttpInEvent reqToCompBWithResponse3 = defineRequestsToCompB( "3");
 
 		ComplexEvent andEvent = WaitComplexEventBuilder.and(reqToCompBWithResponse1, reqToCompBWithResponse2);
 		ComplexEvent orEvent = WaitComplexEventBuilder.or(andEvent, reqToCompBWithResponse3);
@@ -184,7 +205,7 @@ public class HttpInWhenBBTest extends AbstractWhenBehavior {
 		EventStream eventStream = EventStream.given(httpInEventHandler);
 
 		// invoke test utility
-		utilityProvider.getNewHttpClientInstance(TEST_UTILITY_URL).sendGet(behaviorEnum.name());
+		utilityProvider.getNewHttpClientInstance(TEST_UTILITY_URL).sendGet(testName.getMethodName());
 
 		eventStream.when(orEvent);
 

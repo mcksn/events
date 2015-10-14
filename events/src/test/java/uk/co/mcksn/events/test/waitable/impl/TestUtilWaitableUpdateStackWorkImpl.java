@@ -13,18 +13,18 @@ import uk.co.mcksn.events.stack.AbstractUpdateEventsStackWork;
 @SuppressWarnings("rawtypes")
 public class TestUtilWaitableUpdateStackWorkImpl extends AbstractUpdateEventsStackWork<TestUtilWaitableEvent> {
 
-	private int watchableObjChange = 0;
+	private int watchableObjValue = 0;
 
 	public TestUtilWaitableUpdateStackWorkImpl(int watchableObjChange) {
-		this.watchableObjChange = watchableObjChange;
+		this.watchableObjValue = watchableObjChange;
 	}
 
 	protected TestUtilWaitableEvent matchIncidentToEvent(Collection<Event> events) {
-		return findMatchingEvent(events, watchableObjChange);
+		return findMatchingEvent(events, watchableObjValue);
 	}
 
 	protected void updateResultModule(TestUtilWaitableEvent matchedEvent) {
-		matchedEvent.getResultModule().setValue(watchableObjChange);
+		matchedEvent.getResultModule().setValue(watchableObjValue);
 	}
 
 	protected EventState getState(TestUtilWaitableEvent matchedEvent) {

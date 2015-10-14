@@ -12,7 +12,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.mockito.runners.MockitoJUnitRunner;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
@@ -21,11 +23,11 @@ import uk.co.mcksn.events.event.type.Waitable;
 import uk.co.mcksn.events.eventhandler.util.EventHandlerResolver;
 import uk.co.mcksn.events.eventstream.WaitHandlerable;
 
-@RunWith(PowerMockRunner.class)
+@RunWith(MockitoJUnitRunner.class)
 @SuppressWarnings("rawtypes")
-@PrepareForTest(value = EventHandlerResolver.class)
 public class RegisterForWaitStrategyFactoryTest {
 
+	
 	@Mock
 	private List mockList;
 
@@ -33,29 +35,31 @@ public class RegisterForWaitStrategyFactoryTest {
 	private Waitable mockWaitable;
 
 	@Mock
+	private EventHandlerResolver mockEventHandlerResolver;
+
+	@Mock
 	private WaitHandlerable mockWaitHandlerable;
 
 	@InjectMocks
-	private RegisterForWaitStrategyFactory factory = null;
+	private RegisterForWaitStrategyFactory factory;
 
 	@Before
-	public void setUp() {
-		MockitoAnnotations.initMocks(RegisterForWaitStrategyFactoryTest.class);
+	public void before()
+	{
+		factory.setEventHandlerResolver(mockEventHandlerResolver);
 	}
-
+	
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testCreateRegisterForWaitStrategy() {
-
+		
 		// Given`
 		RegisterForWaitStrategy expectedMockStrategy = mock(RegisterForWaitStrategy.class);
 
+		given(mockEventHandlerResolver.findApplicableHandler(WaitHandlerable.class, mockWaitable, mockList))
+		.willReturn(mockWaitHandlerable);
+
 		given(mockWaitHandlerable.getRegisterForWaitStrategy()).willReturn(expectedMockStrategy);
-
-		PowerMockito.mockStatic(EventHandlerResolver.class);
-
-		given(EventHandlerResolver.findApplicableHandler(WaitHandlerable.class, mockWaitable, mockList))
-				.willReturn(mockWaitHandlerable);
 
 		// When
 		RegisterForWaitStrategy actualStrategy = factory.createRegisterForWaitStrategy(mockWaitable);

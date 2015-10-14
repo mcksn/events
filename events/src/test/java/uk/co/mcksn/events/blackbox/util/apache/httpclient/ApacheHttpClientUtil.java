@@ -66,7 +66,7 @@ public class ApacheHttpClientUtil implements CleanUpable {
 		Future<Object> futureResponse = executorService.submit(new Callable<Object>() {
 			public Object call() throws Exception {
 
-				final String URL_WITH_BEHAVIOR_NAME = url + "?behaviorName=" + behaviorName;
+				final String URL_WITH_BEHAVIOR_NAME = url + behaviorName;
 
 				HttpGet request = new HttpGet(URL_WITH_BEHAVIOR_NAME);
 

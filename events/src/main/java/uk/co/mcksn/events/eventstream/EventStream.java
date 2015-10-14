@@ -31,6 +31,8 @@ import uk.co.mcksn.events.tree.Treeable;
 public class EventStream {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(EventStream.class);
+	
+	private EventHandlerResolver EVENT_HANDLER_RESOLVER = new EventHandlerResolver();
 
 	/**
 	 * Specify the landscapes the story will be set in and start the story
@@ -71,7 +73,7 @@ public class EventStream {
 		simulateable.getOccurredModule().setVerificationStrategyFactory(verificationStrategyFactory);
 		eventStackWorker.add(simulateable);
 
-		EventHandlerResolver.findApplicableHandler(SimulateHandlerable.class, simulateable, availableEventHandlers);
+		EVENT_HANDLER_RESOLVER.findApplicableHandler(SimulateHandlerable.class, simulateable, availableEventHandlers);
 
 		return new ThenStream(this);
 
@@ -126,4 +128,5 @@ public class EventStream {
 		return this;
 
 	}
+
 }
